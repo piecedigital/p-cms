@@ -1,0 +1,11 @@
+{
+    "plugins": [
+        {
+            "viewName": "Portfolio",
+            "viewComponent": "portfolio",
+            "databaseCollections": [
+                "portfolios"
+            ]
+        }
+    ]
+}
