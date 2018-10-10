@@ -4,6 +4,8 @@ import { getView } from "./render";
 import Database from "./database";
 import Store from "./store";
 import { ProjectInterface } from "../plugins/custom/portfolio/project.class";
+import { readFileSync, writeFileSync } from "fs";
+import { join } from "path";
 
 const app = express();
 let dbs: Database = null;
@@ -25,7 +27,8 @@ app.post("/add-project", (req, res) => {
         res.redirect(req.headers.referer);
     });
 });
- app.post("/remove-project", (req, res) => {
+
+app.post("/remove-project", (req, res) => {
     console.log(req.body);
      dbs.dbs.collection("portfolios").remove({
         _id: req.body._id.map ? req.body._id.map(_id => Types.ObjectId(_id)) : Types.ObjectId(req.body._id)
@@ -35,6 +38,20 @@ app.post("/add-project", (req, res) => {
         res.redirect(req.headers.referer);
     });
     // res.redirect(req.headers.referer);
+});
+
+app.post("/apply-theme", (req, res) => {
+    console.log(req.body);
+
+    process.env["THEME"] = req.body.theme;
+    var file = JSON.parse(readFileSync(join(__dirname, "../register.json")).toString());
+    console.log(file);
+
+    file.theme = req.body.theme;
+
+    writeFileSync(join(__dirname, "../register.json"), JSON.stringify(file));
+
+    res.redirect(req.headers.referer);
 });
 
 app.post("*", (req, res) => {
