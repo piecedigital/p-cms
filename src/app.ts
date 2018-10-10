@@ -2,7 +2,7 @@ import * as express from "express";
 import * as path from "path";
 import * as cookieParser from "cookie-parser";
 import * as bodyParser from "body-parser";
-import { Types } from "mongoose";
+import { Types, plugin } from "mongoose";
 import * as bcrypt from "bcryptjs";
 import adminRoutes from "./modules/admin-routes";
 import api from "./modules/api";
@@ -14,23 +14,13 @@ import { UserInterface, User } from "./modules/user.class";
 import { registerAdminView } from "./modules/register-admin-view";
 import { PluginRegister } from "./modules/plugin.class";
 import { readdirSync } from "fs";
-import { urlPrefixer } from "./modules/helpers";
+import { urlPrefixer, getPlugins } from "./modules/helpers";
 
 const dbs = new Database();
 const store = new Store();
 
-function getStuff(pluginType: string = "standard") {
-    readdirSync(path.join(__dirname, `plugins/${pluginType}`))
-    .map((folder: string) => {
-        const pr: PluginRegister = require(path.join(__dirname, "plugins/custom", folder, "info.json"));
-        const component = require(path.join(__dirname, "plugins/custom", folder, "index"));
-        return { pr, component, directory: folder };
-    })
-    .map((data: {
-        pr: PluginRegister,
-        component: any,
-        directory: string
-    }) => {
+function getPluginsAndRegister(pluginType: string = "standard") {
+    getPlugins(pluginType, (data) => {
         const {
             pr, component, directory
         } = data;
@@ -40,7 +30,7 @@ function getStuff(pluginType: string = "standard") {
         } catch (error) {
             console.error("Could not load plugin", pr.name, error);
         }
-    });
+    })
 }
 
 dbs.successCallback = () => {
@@ -77,9 +67,9 @@ dbs.successCallback = () => {
     // console.log(registerData, process.env["THEME"]);
 
     // load standard plugins
-    getStuff();
+    getPluginsAndRegister();
     // load custom plugsins
-    getStuff("custom");
+    getPluginsAndRegister("custom");
 
     app.use("/public", express.static(path.join(__dirname, "public")));
     app.use(cookieParser());

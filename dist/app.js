@@ -13,19 +13,12 @@ var database_1 = require("./modules/database");
 var store_1 = require("./modules/store");
 var render_1 = require("./modules/render");
 var register_admin_view_1 = require("./modules/register-admin-view");
-var fs_1 = require("fs");
 var helpers_1 = require("./modules/helpers");
 var dbs = new database_1.default();
 var store = new store_1.default();
-function getStuff(pluginType) {
+function getPluginsAndRegister(pluginType) {
     if (pluginType === void 0) { pluginType = "standard"; }
-    fs_1.readdirSync(path.join(__dirname, "plugins/" + pluginType))
-        .map(function (folder) {
-        var pr = require(path.join(__dirname, "plugins/custom", folder, "info.json"));
-        var component = require(path.join(__dirname, "plugins/custom", folder, "index"));
-        return { pr: pr, component: component, directory: folder };
-    })
-        .map(function (data) {
+    helpers_1.getPlugins(pluginType, function (data) {
         var pr = data.pr, component = data.component, directory = data.directory;
         try {
             store.addPlugin(register_admin_view_1.registerAdminView(pr, directory, component.default));
@@ -63,9 +56,9 @@ dbs.successCallback = function () {
     process.env["THEME"] = registerData.theme || "example";
     // console.log(registerData, process.env["THEME"]);
     // load standard plugins
-    getStuff();
+    getPluginsAndRegister();
     // load custom plugsins
-    getStuff("custom");
+    getPluginsAndRegister("custom");
     app.use("/public", express.static(path.join(__dirname, "public")));
     app.use(cookieParser());
     app.use(bodyParser.urlencoded({ extended: false }));
