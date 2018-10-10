@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Project } from "../../../modules/project.class";
+import { Project } from "./project.class";
 
 export default class Index extends React.Component {
     state: {
@@ -8,6 +8,8 @@ export default class Index extends React.Component {
 
     constructor(props) {
         super(props);
+        // console.log(props);
+
         this.state = {
             portfolios: props.portfolios || []
         };

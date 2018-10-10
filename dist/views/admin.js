@@ -27,10 +27,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
 var react_router_1 = require("react-router");
 var react_router_dom_1 = require("react-router-dom");
+var _404_1 = require("./404");
 var AdminDashboard = /** @class */ (function (_super) {
     __extends(AdminDashboard, _super);
     function AdminDashboard(props) {
         var _this = _super.call(this, props) || this;
+        // console.log("admin", props);
         _this.state = {
             adminViews: props.adminViews || []
         };
@@ -42,21 +44,24 @@ var AdminDashboard = /** @class */ (function (_super) {
             React.createElement("div", { className: "admin-dashboard" },
                 React.createElement("div", { className: "nav" },
                     React.createElement("div", { className: "item" },
-                        React.createElement(react_router_dom_1.Link, { to: "/" }, "View Site"))),
+                        React.createElement(react_router_dom_1.Link, { to: "/" }, "View Site")),
+                    React.createElement("div", { className: "item" },
+                        React.createElement(react_router_dom_1.Link, { to: "/admin/logout" }, "Logout"))),
                 React.createElement("section", { className: "side-panel" },
                     React.createElement(react_router_dom_1.Link, { to: "/admin", className: "row logo" },
                         React.createElement("h4", null, "My CMS")),
                     this.state.adminViews.map(function (view, ind) {
-                        return (React.createElement(react_router_dom_1.Link, { key: view.name + "-" + ind, to: "/admin/" + view.slug(), className: "row" },
+                        return (React.createElement(react_router_dom_1.Link, { key: view.directory + "-" + ind, to: "/admin/plugin/" + view.slug(), className: "row" },
                             React.createElement("h4", null, view.name)));
                     })),
                 React.createElement("section", { className: "main-content" },
                     React.createElement(react_router_1.Switch, null,
+                        React.createElement(react_router_1.Route, { path: "/admin/login", render: function (props) { return React.createElement(AdminLogin, __assign({}, props, _this.props)); } }),
                         this.state.adminViews.map(function (view) {
-                            return (React.createElement(react_router_1.Route, { key: view.name, path: "/admin/" + view.name, render: function (props) { return React.createElement(view.component, __assign({}, props, _this.props)); } }));
+                            return (React.createElement(react_router_1.Route, { key: view.name, path: "/admin/plugin/" + view.directory, render: function (props) { return React.createElement(view.component, __assign({}, props, _this.props)); } }));
                         }),
-                        React.createElement(react_router_1.Route, { path: "/admin-login", render: function (props) { return React.createElement(AdminLogin, __assign({}, props, _this.props)); } }),
-                        React.createElement(react_router_1.Route, { path: "/admin", render: function (props) { return React.createElement(AdminDashboardWelcome, __assign({}, props, _this.props)); } }))))
+                        React.createElement(react_router_1.Route, { path: "/admin", render: function (props) { return React.createElement(AdminDashboardWelcome, __assign({}, props, _this.props)); } }),
+                        React.createElement(react_router_1.Route, { path: "*", render: function (props) { return React.createElement(_404_1.$404, __assign({}, props, _this.props)); } }))))
         ]);
     };
     return AdminDashboard;
@@ -89,7 +94,7 @@ var AdminLogin = /** @class */ (function (_super) {
                 React.createElement("div", { className: "page-wrap" },
                     React.createElement("header", null,
                         React.createElement("h1", null, "Administration")),
-                    React.createElement("form", { action: "/admin-login", method: "POST" },
+                    React.createElement("form", { action: "/admin/login", method: "POST" },
                         React.createElement("input", { type: "hidden", name: "_csrf", value: this.props.csrfToken }),
                         React.createElement("div", null,
                             React.createElement("label", { htmlFor: "" }, "Username:"),

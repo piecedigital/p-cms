@@ -4,22 +4,50 @@ import * as cookieParser from "cookie-parser";
 import * as bodyParser from "body-parser";
 import { Types } from "mongoose";
 import * as bcrypt from "bcryptjs";
-import routes from "./modules/routes";
+import adminRoutes from "./modules/admin-routes";
 import api from "./modules/api";
+import themeRoutes from "./modules/theme-routes";
 import Database from "./modules/database";
 import Store from "./modules/store";
 import { getView } from "./modules/render";
 import { UserInterface, User } from "./modules/user.class";
 import { registerAdminView } from "./modules/register-admin-view";
-import { Plugin, PluginRegister } from "./modules/plugin.class";
+import { PluginRegister } from "./modules/plugin.class";
+import { readdirSync } from "fs";
+import { urlPrefixer } from "./modules/helpers";
 
 const dbs = new Database();
 const store = new Store();
 
+function getStuff(pluginType: string = "standard") {
+    readdirSync(path.join(__dirname, `plugins/${pluginType}`))
+    .map((folder: string) => {
+        const pr: PluginRegister = require(path.join(__dirname, "plugins/custom", folder, "info.json"));
+        const component = require(path.join(__dirname, "plugins/custom", folder, "index"));
+        return { pr, component, directory: folder };
+    })
+    .map((data: {
+        pr: PluginRegister,
+        component: any,
+        directory: string
+    }) => {
+        const {
+            pr, component, directory
+        } = data;
+
+        try {
+            store.addPlugin(registerAdminView(pr, directory, component.default));
+        } catch (error) {
+            console.error("Could not load plugin", pr.name, error);
+        }
+    });
+}
+
 dbs.successCallback = () => {
     const PORT = process.env["PORT"] || 8080;
-
     const app = express();
+
+    const registerData = require(path.join(__dirname, "register.json"));
 
     // find or make temporary admin user
     dbs.AdminUserModel.findOne({
@@ -45,31 +73,29 @@ dbs.successCallback = () => {
         console.log("found admin user");
     });
 
+    process.env["THEME"] = registerData.theme || "example";
+    // console.log(registerData, process.env["THEME"]);
+
     // load standard plugins
-    [].map((pr: PluginRegister) => {
-        try {
-            var x = require(`./plugins/standard/${pr.viewComponent}`).default;
-            store.addPlugin(registerAdminView(pr, x));
-        } catch (error) {
-            console.error("Could not load plugin", x.viewName, error);
-        }
-    });
+    getStuff();
     // load custom plugsins
-    require(path.join(__dirname, "register.json")).plugins.map((pr: PluginRegister) => {
-        try {
-            var x = require(`./plugins/custom/${pr.viewComponent}`).default;
-            store.addPlugin(registerAdminView(pr, x));
-        } catch (error) {
-            console.error("Could not load plugin", x.viewName, error);
-        }
-    });
+    getStuff("custom");
 
     app.use("/public", express.static(path.join(__dirname, "public")));
     app.use(cookieParser());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
-    app.use(routes(dbs, store));
+    app.use(themeRoutes(dbs, store));
+    app.use("/admin", adminRoutes(dbs, store));
     app.use("/api", api(dbs, store));
+    var up = urlPrefixer("/admin");
+    app.get("*", (req, res) => {
+        // console.log(req.path);
+        res.status(404).send(getView(up(req.url), {
+            title: "Not Found",
+            viewName: "404"
+        }));
+    });
 
     app.listen(PORT, () => {
         console.log("Listening on port", PORT);

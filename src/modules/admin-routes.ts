@@ -1,0 +1,85 @@
+import * as express from "express";
+import * as csrf from "csurf";
+import { Types } from "mongoose";
+import { getView } from "./render";
+import { authorize, authenticate, deauthenticate } from "./auth";
+import Database from "./database";
+import Store from "./store";
+import { aggregateAllPluginData, urlPrefixer } from "./helpers";
+
+const app = express();
+let dbs: Database = null;
+let store: Store = null;
+const csrfProtection = csrf({ cookie: true });
+
+var up = urlPrefixer("/admin");
+
+app.get("/", csrfProtection, (req, res) => {
+    // console.log(`/`, req.path);
+    authorize(
+        req, dbs,
+        () => {
+            res.send(getView(up(req.url), {
+                title: "Admin Dashboard",
+                data: {
+                    adminViews: store.getPlugins()
+                }
+            }));
+        },
+        () => res.redirect("/admin/login")
+    );
+});
+
+app.get("/logout", csrfProtection, (req, res) => {
+    // console.log(`"/admin-logout"`, req.path);
+    deauthenticate(dbs, req.cookies["sessId"]);
+    res.cookie("sessId", null);
+    res.redirect("/admin");
+});
+
+app.get("/login", csrfProtection, (req, res) => {
+    // console.log(`"/admin/login"`, req.path);
+    authorize(req, dbs, () => {
+        res.redirect("/admin");
+    }, () => {
+        res.send(getView(up(req.url), {
+            title: "Admin Login",
+            data: {
+                csrfToken: req.csrfToken()
+            }
+        }));
+    });
+});
+
+app.get(/^\/plugin\/(.+)?$/i, csrfProtection, (req, res) => {
+    // console.log(`/^\/plugin\/(.+)?$/i`, req.path);
+    authorize(
+        req, dbs,
+        () => {
+            aggregateAllPluginData(dbs, store, null, (data: any) => {
+                // console.log(data);
+                res.send(getView(up(req.url), {
+                    title: "Admin Dashboard",
+                    data
+                }));
+            });
+        },
+        () => res.redirect("/admin/login")
+    );
+});
+
+app.post("/login", csrfProtection, (req, res) => {
+    // console.log(`"/admin/login"`, req.path);
+    authenticate(dbs, req.body, (sessId: Types.ObjectId) => {
+        res.cookie("sessId", sessId);
+        res.redirect("/admin");
+    }, () => {
+        res.redirect("/admin");
+    });
+});
+
+export default function(db, str) {
+    dbs = db;
+    store = str;
+    return app;
+};

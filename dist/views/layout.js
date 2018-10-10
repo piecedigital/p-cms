@@ -27,39 +27,34 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
 var react_router_1 = require("react-router");
 // import views
-var home_1 = require("../views/home");
 var _404_1 = require("../views/404");
 var internal_error_1 = require("../views/internal-error");
 var admin_1 = require("../views/admin");
 var views = {
-    "index": home_1.Home,
-    "home": home_1.Home,
     "admin": admin_1.AdminDashboard,
     "adminLogin": admin_1.AdminLogin,
     "404": _404_1.$404,
     "internalError": internal_error_1.InternalError,
 };
+var ThemeIndex = require("../themes/" + process.env["THEME"] + "/index").default;
 var Layout = /** @class */ (function (_super) {
     __extends(Layout, _super);
     function Layout(props) {
         var _this = _super.call(this, props) || this;
+        // console.log("yerrrr", props.match, props.location);
         _this.state = {};
         return _this;
     }
     Layout.prototype.render = function () {
         var _this = this;
         return ([
-            React.createElement("nav", null,
-                React.createElement("div", { className: "page-wrap" })),
             (this.props.children) ? (React.Children.map(this.props.children, function (child) { return React.cloneElement(child, _this.props); })) : (React.createElement(react_router_1.Switch, null,
-                React.createElement(react_router_1.Route, { path: "/admin*", render: function (props) { return React.createElement(admin_1.AdminDashboard, __assign({}, props, _this.props)); } }),
-                React.createElement(react_router_1.Route, { path: "/", render: function (props) { return React.createElement(home_1.Home, __assign({}, props, _this.props)); } }),
-                React.createElement(react_router_1.Route, { component: _404_1.$404 }))),
-            React.createElement("section", { className: "footer" },
-                React.createElement("div", { className: "section-separator" },
-                    React.createElement("div", { className: "triangle" })),
-                React.createElement("div", { className: "page-wrap" },
-                    React.createElement("footer", null, "\u00A9 Copyright  Darryl Dixon, 2018. All Rights Reserved.")))
+                React.createElement(react_router_1.Route, { path: "/admin", component: function (props) {
+                        return React.createElement(admin_1.AdminDashboard, __assign({}, props, _this.props));
+                    } }),
+                React.createElement(react_router_1.Route, { path: "/", component: function (props) {
+                        return React.createElement(ThemeIndex, __assign({}, props, _this.props));
+                    } })))
         ]);
     };
     return Layout;

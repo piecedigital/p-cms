@@ -11,7 +11,7 @@ var Store = /** @class */ (function () {
         return this.plugins;
     };
     Store.prototype.getPluginByName = function (name) {
-        return this.plugins.find(function (x) { return x.name === name; });
+        return this.plugins.find(function (x) { return !!x.name.match(name); });
     };
     return Store;
 }());

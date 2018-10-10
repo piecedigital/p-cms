@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Project } from "../modules/project.class";
+import { Project } from "../../plugins/custom/portfolio/project.class";
 
-export class Home extends React.Component {
+export default class Home extends React.Component {
     state: {
         portfolios: Project[]
     };
@@ -9,6 +9,7 @@ export class Home extends React.Component {
 
     constructor(props) {
         super(props);
+        // console.log("home", props);
 
         this.state = {
             portfolios: props.portfolios || []
@@ -17,6 +18,10 @@ export class Home extends React.Component {
 
     render() {
         return ([
+            <nav>
+                <div className="page-wrap">
+                </div>
+            </nav>,
             <section className="header">
                 <div className="page-wrap">
                     <header>
@@ -60,6 +65,16 @@ export class Home extends React.Component {
                             })
                         }
                     </div>
+                </div>
+            </section>,
+            <section className="footer">
+                <div className="section-separator">
+                    <div className="triangle"></div>
+                </div>
+                <div className="page-wrap">
+                    <footer>
+                        &copy; Copyright  Darryl Dixon, 2018. All Rights Reserved.
+                    </footer>
                 </div>
             </section>
         ]);

@@ -16,6 +16,6 @@ export default class Store {
     }
 
     getPluginByName(name: string): Plugin {
-        return this.plugins.find(x => x.name === name);
+        return this.plugins.find(x => !!x.name.match(name));
     }
 }

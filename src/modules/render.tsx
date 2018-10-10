@@ -1,9 +1,9 @@
 import * as React from "react";
 import { renderToString } from "react-dom/server";
-import { StaticRouter as Router } from "react-router";
+import { StaticRouter as Router, Route } from "react-router";
 // import views
 import { Layout } from "../views/layout";
-import { Home } from "../views/home";
+// import { Home } from "../views/home";
 import { $404 } from "../views/404";
 import { InternalError } from "../views/internal-error";
 import { AdminDashboard, AdminLogin } from "../views/admin";
@@ -12,8 +12,8 @@ import Database from "./database";
 const context = {};
 
 const views: Record<string, any> = {
-    "index": Home,
-    "home": Home,
+    // "index": Home,
+    // "home": Home,
     "admin": AdminDashboard,
     "adminLogin": AdminLogin,
     "404": $404,
@@ -45,13 +45,13 @@ export function getView(url: string, options: renderOptions): string {
             ${renderToString(
                 (View) ? (
                     <Router location={url} context={context}>
-                        <Layout {...options.data} database={options.database}>
+                        <Route exact={true} component={(props) => <Layout {...props} {...options.data} database={options.database} />} >
                             <View />
-                        </Layout>
+                        </Route>
                     </Router>
                 ) : (
                     <Router location={url} context={context}>
-                        <Layout {...options.data} database={options.database} />
+                        <Route exact={true} component={(props) => <Layout {...props} {...options.data} database={options.database} />} />
                     </Router>
                 )
             )}

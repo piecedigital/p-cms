@@ -16,14 +16,14 @@ var server_1 = require("react-dom/server");
 var react_router_1 = require("react-router");
 // import views
 var layout_1 = require("../views/layout");
-var home_1 = require("../views/home");
+// import { Home } from "../views/home";
 var _404_1 = require("../views/404");
 var internal_error_1 = require("../views/internal-error");
 var admin_1 = require("../views/admin");
 var context = {};
 var views = {
-    "index": home_1.Home,
-    "home": home_1.Home,
+    // "index": Home,
+    // "home": Home,
     "admin": admin_1.AdminDashboard,
     "adminLogin": admin_1.AdminLogin,
     "404": _404_1.$404,
@@ -33,8 +33,8 @@ function getView(url, options) {
     options.viewName = options.viewName;
     var View = views[options.viewName];
     return "<!DOCTYPE html>\n    <html>\n    <head>\n        <meta charset=\"utf-8\" />\n        <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"/>\n        <title>" + options.title + "</title>\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n        <link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"/public/css/style.css\" />\n    </head>\n    <body>\n        <div class=\"react-app\">\n            " + server_1.renderToString((View) ? (React.createElement(react_router_1.StaticRouter, { location: url, context: context },
-        React.createElement(layout_1.Layout, __assign({}, options.data, { database: options.database }),
+        React.createElement(react_router_1.Route, { exact: true, component: function (props) { return React.createElement(layout_1.Layout, __assign({}, props, options.data, { database: options.database })); } },
             React.createElement(View, null)))) : (React.createElement(react_router_1.StaticRouter, { location: url, context: context },
-        React.createElement(layout_1.Layout, __assign({}, options.data, { database: options.database }))))) + "\n        </div>\n    </body>\n    </html>";
+        React.createElement(react_router_1.Route, { exact: true, component: function (props) { return React.createElement(layout_1.Layout, __assign({}, props, options.data, { database: options.database })); } })))) + "\n        </div>\n    </body>\n    </html>";
 }
 exports.getView = getView;

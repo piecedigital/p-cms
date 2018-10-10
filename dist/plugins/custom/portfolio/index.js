@@ -18,6 +18,7 @@ var Index = /** @class */ (function (_super) {
     __extends(Index, _super);
     function Index(props) {
         var _this = _super.call(this, props) || this;
+        // console.log(props);
         _this.state = {
             portfolios: props.portfolios || []
         };
