@@ -18,7 +18,7 @@ var Home = /** @class */ (function (_super) {
     __extends(Home, _super);
     function Home(props) {
         var _this = _super.call(this, props) || this;
-        // console.log("home", props);
+        console.log("home 2");
         _this.state = {
             portfolios: props.portfolios || []
         };

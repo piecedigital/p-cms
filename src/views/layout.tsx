@@ -12,17 +12,20 @@ const views: Record<string, any> = {
     "internalError": InternalError,
 }
 
-const ThemeIndex = require(`../themes/${process.env["THEME"]}/index`).default;
 
 export class Layout extends React.Component {
-    state: {};
+    state: {
+        theme: any
+    };
     props: any;
 
     constructor(props) {
         super(props);
         // console.log("yerrrr", props.match, props.location);
 
-        this.state = {};
+        this.state = {
+            theme: require(`../themes/${process.env["THEME"]}/index`).default
+        };
     }
 
     render() {
@@ -38,7 +41,7 @@ export class Layout extends React.Component {
                         return <AdminDashboard {...props} {...this.props} />;
                     }} />
                     <Route path="/" component={(props) => {
-                        return <ThemeIndex {...props} {...this.props} />;
+                        return <this.state.theme {...props} {...this.props} />;
                     }} />
                     {/* <Route component={$404} /> */}
                 </Switch>

@@ -9,7 +9,7 @@ export default class Home extends React.Component {
 
     constructor(props) {
         super(props);
-        // console.log("home", props);
+        console.log("home 2");
 
         this.state = {
             portfolios: props.portfolios || []

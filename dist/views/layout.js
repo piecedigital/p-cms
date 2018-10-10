@@ -36,13 +36,14 @@ var views = {
     "404": _404_1.$404,
     "internalError": internal_error_1.InternalError,
 };
-var ThemeIndex = require("../themes/" + process.env["THEME"] + "/index").default;
 var Layout = /** @class */ (function (_super) {
     __extends(Layout, _super);
     function Layout(props) {
         var _this = _super.call(this, props) || this;
         // console.log("yerrrr", props.match, props.location);
-        _this.state = {};
+        _this.state = {
+            theme: require("../themes/" + process.env["THEME"] + "/index").default
+        };
         return _this;
     }
     Layout.prototype.render = function () {
@@ -53,7 +54,7 @@ var Layout = /** @class */ (function (_super) {
                         return React.createElement(admin_1.AdminDashboard, __assign({}, props, _this.props));
                     } }),
                 React.createElement(react_router_1.Route, { path: "/", component: function (props) {
-                        return React.createElement(ThemeIndex, __assign({}, props, _this.props));
+                        return React.createElement(_this.state.theme, __assign({}, props, _this.props));
                     } })))
         ]);
     };
