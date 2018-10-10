@@ -69,8 +69,6 @@ export function aggregateAllPluginData(dbs: Database, store: Store, options: Agg
         itter1();
     })
     .then((data: any) => {
-        console.log("we are done 2");
-
         callback(data);
     })
     .catch(e => console.error(e));
@@ -89,8 +87,6 @@ export interface loadedPluginData {
 }
 
 export function getPlugins(pluginType: string = "standard", callback: (data: any) => void) {
-
-
     readdirSync(join(__dirname, `../plugins/${pluginType}`))
     .map((folder: string) => {
         const pr: PluginRegister = require(join(__dirname, `../plugins/${pluginType}`, folder, "info.json"));
@@ -108,6 +104,7 @@ export interface ThemeRegister {
     dateCreated?: string,
     author?: string,
     company?: string,
+    image?: string
 }
 
 export interface loadedThemeData {
@@ -116,17 +113,14 @@ export interface loadedThemeData {
     directory: string
 }
 
-export function getThemes(): loadedThemeData {
+export function getThemes(): loadedThemeData[] {
     let returnData = null;
 
-    readdirSync(join(__dirname, `../themes`))
+    return readdirSync(join(__dirname, `../themes`))
     .map((folder: string) => {
         const tr: ThemeRegister = require(join(__dirname, "../themes", folder, "info.json"));
         const component = require(join(__dirname, "../themes", folder, "index"));
         return { tr, component, directory: folder };
-    })
-    .map((data: loadedThemeData) => {
-        returnData = data;
     });
 
     return returnData;

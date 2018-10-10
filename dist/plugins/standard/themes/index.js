@@ -19,45 +19,33 @@ var Index = /** @class */ (function (_super) {
     __extends(Index, _super);
     function Index(props) {
         var _this = _super.call(this, props) || this;
-        console.log(helpers_1.getThemes());
         _this.state = {
-            portfolios: props.portfolios || []
+            themes: helpers_1.getThemes() || []
         };
         return _this;
     }
     Index.prototype.render = function () {
         return ([
             React.createElement("div", { className: "page-wrap portfolio" },
-                React.createElement("form", { action: "/api/remove-project", method: "POST" },
-                    React.createElement("div", { className: "projects" }, [].map(function (project, ind) {
-                        return (React.createElement("div", { key: "" + project._id, className: "project" },
-                            React.createElement("a", { href: "" + project.projectURL },
-                                React.createElement("div", { className: "image" },
-                                    React.createElement("img", { src: project.imageURL, alt: "" + project.description })),
+                React.createElement("form", { action: "/api/apply-theme", method: "POST" },
+                    React.createElement("div", { className: "themes" }, this.state.themes.map(function (theme, ind) {
+                        return ([
+                            React.createElement("input", { key: "" + theme.directory, type: "radio", name: "theme", id: "" + theme.directory, value: theme.directory, checked: process.env["THEME"] === theme.directory, readOnly: true }),
+                            React.createElement("label", { key: "" + theme.directory, htmlFor: "" + theme.directory, className: "theme" },
+                                (theme.tr.image) ? (React.createElement("div", { className: "image" },
+                                    React.createElement("img", { src: theme.tr.image }))) : null,
                                 React.createElement("div", { className: "info" },
                                     React.createElement("div", { className: "project-name" },
-                                        React.createElement("span", null, project.name)))),
-                            React.createElement("input", { type: "checkbox", name: "_id", id: "", value: project._id.toHexString() })));
+                                        React.createElement("span", null, theme.tr.name)),
+                                    React.createElement("div", { className: "separator" }),
+                                    React.createElement("div", { className: "project-description" },
+                                        React.createElement("span", null, theme.tr.description))))
+                        ]);
                     })),
-                    React.createElement("button", null, "Remove Selected")),
-                React.createElement("form", { className: "add-project-form", action: "/api/add-project", method: "POST" },
-                    React.createElement("div", null,
-                        React.createElement("label", { htmlFor: "" }, "Project Name"),
-                        React.createElement("br", null),
-                        React.createElement("input", { type: "text", name: "name" })),
-                    React.createElement("div", null,
-                        React.createElement("label", { htmlFor: "" }, "Project Description"),
-                        React.createElement("br", null),
-                        React.createElement("textarea", { name: "description", id: "", cols: 30, rows: 10 })),
-                    React.createElement("div", null,
-                        React.createElement("label", { htmlFor: "" }, "Project URL"),
-                        React.createElement("br", null),
-                        React.createElement("input", { type: "text", name: "project-url" })),
-                    React.createElement("div", null,
-                        React.createElement("label", { htmlFor: "" }, "Project Image"),
-                        React.createElement("br", null),
-                        React.createElement("input", { type: "text", name: "image-url", defaultValue: "/public/media/images/cat-dog.jpg", disabled: true })),
-                    React.createElement("button", null, "Submit")))
+                    React.createElement("br", null),
+                    React.createElement("div", { className: "separator" }),
+                    React.createElement("br", null),
+                    React.createElement("button", null, "Apply Theme")))
         ]);
     };
     return Index;

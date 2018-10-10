@@ -1,63 +1,52 @@
 import * as React from "react";
-import { getThemes } from "../../../modules/helpers";
+import { getThemes, loadedThemeData } from "../../../modules/helpers";
 
 export default class Index extends React.Component {
-    state: {};
+    state: {
+        themes
+    };
 
     constructor(props) {
         super(props);
-        console.log(getThemes());
 
         this.state = {
-            portfolios: props.portfolios || []
+            themes: getThemes() || []
         };
     }
 
     render() {
         return ([
             <div className="page-wrap portfolio">
-                <form action="/api/remove-project" method="POST">
-                    <div className="projects">
+                <form action="/api/apply-theme" method="POST">
+                    <div className="themes">
                         {
-                            [].map((project, ind) => {
-                                return (
-                                    <div key={`${project._id}`} className="project">
-                                        <a href={`${project.projectURL}`}>
-                                            <div className="image">
-                                                <img src={project.imageURL} alt={`${project.description}`} />
-                                            </div>
-                                            <div className="info">
-                                                <div className="project-name">
-                                                    <span>{project.name}</span>
+                            this.state.themes.map((theme: loadedThemeData, ind) => {
+                                return ([
+                                    <input key={`${theme.directory}`} type="radio" name="theme" id={`${theme.directory}`} value={theme.directory} checked={process.env["THEME"] === theme.directory} readOnly />,
+                                    <label key={`${theme.directory}`} htmlFor={`${theme.directory}`} className="theme">
+                                        {
+                                            (theme.tr.image) ? (
+                                                <div className="image">
+                                                    <img src={theme.tr.image} />
                                                 </div>
+                                            ) : null
+                                        }
+                                        <div className="info">
+                                            <div className="project-name">
+                                                <span>{theme.tr.name}</span>
                                             </div>
-                                        </a>
-                                        <input type="checkbox" name="_id" id="" value={project._id.toHexString()}/>
-                                    </div>
-                                );
+                                            <div className="separator"></div>
+                                            <div className="project-description">
+                                                <span>{theme.tr.description}</span>
+                                            </div>
+                                        </div>
+                                    </label>
+                                ]);
                             })
                         }
-                    </div>
-                    <button>Remove Selected</button>
-                </form>
-                <form className="add-project-form" action="/api/add-project" method="POST">
-                    <div>
-                        <label htmlFor="">Project Name</label><br/>
-                        <input type="text" name="name"/>
-                    </div>
-                    <div>
-                        <label htmlFor="">Project Description</label><br/>
-                        <textarea name="description" id="" cols={30} rows={10}></textarea>
-                    </div>
-                    <div>
-                        <label htmlFor="">Project URL</label><br/>
-                        <input type="text" name="project-url" />
-                    </div>
-                    <div>
-                        <label htmlFor="">Project Image</label><br/>
-                        <input type="text" name="image-url" defaultValue="/public/media/images/cat-dog.jpg" disabled/>
-                    </div>
-                    <button>Submit</button>
+                    </div><br/>
+                    <div className="separator"></div><br/>
+                    <button>Apply Theme</button>
                 </form>
             </div>
         ]);

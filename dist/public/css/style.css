@@ -200,6 +200,7 @@ footer {
   color: white;
 }
 .admin-dashboard .main-content {
+  align-items: baseline;
   grid-area: main-content;
   grid-column: 2;
   width: 100%;
@@ -272,6 +273,39 @@ form.add-project-form input, form.add-project-form textarea {
 .projects .project .info {
   display: inline-flex;
   align-items: flex-start;
+  width: 60%;
+}
+
+.themes {
+  display: flex;
+  flex-wrap: wrap;
+}
+.themes input {
+  display: none;
+}
+.themes input:checked + .theme {
+  box-shadow: 0 0 1px 4px white;
+  transform: scale(1.1, 1.1);
+}
+.themes .theme {
+  display: flex;
+  align-items: baseline;
+  max-width: 25%;
+  padding: 8px;
+  background-color: black;
+  color: white;
+}
+.themes .theme .image {
+  display: inline-block;
+  width: 40%;
+}
+.themes .theme .image img {
+  max-width: 100%;
+}
+.themes .theme .info {
+  display: inline-flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
   width: 60%;
 }
 

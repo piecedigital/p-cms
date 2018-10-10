@@ -55,7 +55,6 @@ function aggregateAllPluginData(dbs, store, options, callback) {
         itter1();
     })
         .then(function (data) {
-        console.log("we are done 2");
         callback(data);
     })
         .catch(function (e) { return console.error(e); });
@@ -82,14 +81,11 @@ function getPlugins(pluginType, callback) {
 exports.getPlugins = getPlugins;
 function getThemes() {
     var returnData = null;
-    fs_1.readdirSync(path_1.join(__dirname, "../themes"))
+    return fs_1.readdirSync(path_1.join(__dirname, "../themes"))
         .map(function (folder) {
         var tr = require(path_1.join(__dirname, "../themes", folder, "info.json"));
         var component = require(path_1.join(__dirname, "../themes", folder, "index"));
         return { tr: tr, component: component, directory: folder };
-    })
-        .map(function (data) {
-        returnData = data;
     });
     return returnData;
 }
