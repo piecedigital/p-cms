@@ -12,7 +12,7 @@ let dbs: Database = null;
 let store: Store = null;
 const csrfProtection = csrf({ cookie: true });
 
-var up = urlPrefixer("/admin");
+var up = urlPrefixer("/pc_admin");
 
 app.get("/", csrfProtection, (req, res) => {
     // console.log(`/`, req.path);
@@ -26,21 +26,21 @@ app.get("/", csrfProtection, (req, res) => {
                 }
             }));
         },
-        () => res.redirect("/admin/login")
+        () => res.redirect("/pc_admin/login")
     );
 });
 
 app.get("/logout", csrfProtection, (req, res) => {
-    // console.log(`"/admin-logout"`, req.path);
+    // console.log(`"/pc_admin-logout"`, req.path);
     deauthenticate(dbs, req.cookies["sessId"]);
     res.cookie("sessId", null);
-    res.redirect("/admin");
+    res.redirect("/pc_admin");
 });
 
 app.get("/login", csrfProtection, (req, res) => {
-    // console.log(`"/admin/login"`, req.path);
+    // console.log(`"/pc_admin/login"`, req.path);
     authorize(req, dbs, () => {
-        res.redirect("/admin");
+        res.redirect("/pc_admin");
     }, () => {
         res.send(getView(up(req.url), {
             title: "Admin Login",
@@ -64,17 +64,17 @@ app.get(/^\/plugin\/(.+)?$/i, csrfProtection, (req, res) => {
                 }));
             });
         },
-        () => res.redirect("/admin/login")
+        () => res.redirect("/pc_admin/login")
     );
 });
 
 app.post("/login", csrfProtection, (req, res) => {
-    // console.log(`"/admin/login"`, req.path);
+    // console.log(`"/pc_admin/login"`, req.path);
     authenticate(dbs, req.body, (sessId: Types.ObjectId) => {
         res.cookie("sessId", sessId);
-        res.redirect("/admin");
+        res.redirect("/pc_admin");
     }, () => {
-        res.redirect("/admin");
+        res.redirect("/pc_admin");
     });
 });
 

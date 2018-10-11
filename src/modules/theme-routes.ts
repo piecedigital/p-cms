@@ -13,7 +13,18 @@ const csrfProtection = csrf({ cookie: true });
 var up = urlPrefixer("");
 
 app.get("/", (req, res) => {
-    console.log("theme", req.path);
+    // console.log("theme", req.path);
+    aggregateAllPluginData(dbs, store, null, (data) => {
+        // console.log(data);
+        res.send(getView(up(req.url), {
+            title: "Home",
+            data
+        }));
+    });
+});
+
+app.get("/*", (req, res) => {
+    // console.log("theme", req.path);
     aggregateAllPluginData(dbs, store, null, (data) => {
         // console.log(data);
         res.send(getView(up(req.url), {

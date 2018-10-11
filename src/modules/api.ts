@@ -6,22 +6,24 @@ import Store from "./store";
 import { ProjectInterface } from "../plugins/custom/portfolio/project.class";
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
+import { generatedDatabaseDates } from "./helpers";
 
 const app = express();
 let dbs: Database = null;
 let store: Store = null;
 
 app.post("/add-project", (req, res) => {
-    const project = ({
+    const project = Object.assign({
         _id: new Types.ObjectId(),
         name: req.body["name"],
         projectURL: req.body["project-url"],
         description: req.body["description"],
-        imageURL: req.body["image-url"],
+        imageURL: req.body["image-url"] || "/public/media/images/cat-dog.jpg",
         tools: [],
-    } as ProjectInterface);
+        __v: 0,
+    } as ProjectInterface, generatedDatabaseDates());
 
-     dbs.dbs.collection("portfolios").save(project, (err) => {
+     dbs.dbs.collection("portfolios").insertOne(project, (err) => {
         if(err) return console.error(err);
         console.log("project added");
         res.redirect(req.headers.referer);

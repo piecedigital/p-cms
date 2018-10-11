@@ -2,7 +2,7 @@ import * as express from "express";
 import * as path from "path";
 import * as cookieParser from "cookie-parser";
 import * as bodyParser from "body-parser";
-import { Types, plugin } from "mongoose";
+import { Types } from "mongoose";
 import * as bcrypt from "bcryptjs";
 import adminRoutes from "./modules/admin-routes";
 import api from "./modules/api";
@@ -12,8 +12,6 @@ import Store from "./modules/store";
 import { getView } from "./modules/render";
 import { UserInterface, User } from "./modules/user.class";
 import { registerAdminView } from "./modules/register-admin-view";
-import { PluginRegister } from "./modules/plugin.class";
-import { readdirSync } from "fs";
 import { urlPrefixer, getPlugins } from "./modules/helpers";
 
 const dbs = new Database();
@@ -75,13 +73,12 @@ dbs.successCallback = () => {
     app.use(cookieParser());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
-    app.use(themeRoutes(dbs, store));
-    app.use("/admin", adminRoutes(dbs, store));
+    app.use("/pc_admin", adminRoutes(dbs, store));
     app.use("/api", api(dbs, store));
-    var up = urlPrefixer("/admin");
+    app.use(themeRoutes(dbs, store));
     app.get("*", (req, res) => {
         // console.log(req.path);
-        res.status(404).send(getView(up(req.url), {
+        res.status(404).send(getView(req.url, {
             title: "Not Found",
             viewName: "404"
         }));

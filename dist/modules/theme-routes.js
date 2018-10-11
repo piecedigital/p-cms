@@ -10,7 +10,17 @@ var store = null;
 var csrfProtection = csrf({ cookie: true });
 var up = helpers_1.urlPrefixer("");
 app.get("/", function (req, res) {
-    console.log("theme", req.path);
+    // console.log("theme", req.path);
+    helpers_1.aggregateAllPluginData(dbs, store, null, function (data) {
+        // console.log(data);
+        res.send(render_1.getView(up(req.url), {
+            title: "Home",
+            data: data
+        }));
+    });
+});
+app.get("/*", function (req, res) {
+    // console.log("theme", req.path);
     helpers_1.aggregateAllPluginData(dbs, store, null, function (data) {
         // console.log(data);
         res.send(render_1.getView(up(req.url), {

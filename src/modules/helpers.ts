@@ -114,14 +114,22 @@ export interface loadedThemeData {
 }
 
 export function getThemes(): loadedThemeData[] {
-    let returnData = null;
-
     return readdirSync(join(__dirname, `../themes`))
     .map((folder: string) => {
         const tr: ThemeRegister = require(join(__dirname, "../themes", folder, "info.json"));
         const component = require(join(__dirname, "../themes", folder, "index"));
         return { tr, component, directory: folder };
     });
-
-    return returnData;
 }
+
+export function generatedDatabaseDates(): {
+    createdAt: number,
+    updatedAt: number
+} {
+    const d = Date.now();
+    return {
+        createdAt: d,
+        updatedAt: d,
+    }
+}
+

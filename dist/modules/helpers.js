@@ -80,13 +80,19 @@ function getPlugins(pluginType, callback) {
 }
 exports.getPlugins = getPlugins;
 function getThemes() {
-    var returnData = null;
     return fs_1.readdirSync(path_1.join(__dirname, "../themes"))
         .map(function (folder) {
         var tr = require(path_1.join(__dirname, "../themes", folder, "info.json"));
         var component = require(path_1.join(__dirname, "../themes", folder, "index"));
         return { tr: tr, component: component, directory: folder };
     });
-    return returnData;
 }
 exports.getThemes = getThemes;
+function generatedDatabaseDates() {
+    var d = Date.now();
+    return {
+        createdAt: d,
+        updatedAt: d,
+    };
+}
+exports.generatedDatabaseDates = generatedDatabaseDates;

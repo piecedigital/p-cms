@@ -12,7 +12,6 @@ const views: Record<string, any> = {
     "internalError": InternalError,
 }
 
-
 export class Layout extends React.Component {
     state: {
         theme: any
@@ -23,8 +22,28 @@ export class Layout extends React.Component {
         super(props);
         // console.log("yerrrr", props.match, props.location);
 
+        let theme = null;
+
+        try {
+            theme = require(`../themes/${process.env["THEME"]}/index`).danger()
+        } catch (error) {
+            // console.error(error);
+            try {
+                theme = require(`../themes/${process.env["THEME"]}/index`).default
+            } catch (error) {
+                // console.error(error);
+                try {
+                    theme = require(`../themes/example/index`).default
+                } catch (error) {
+                    // console.error(error);
+                }
+            }
+        }
+
+        if(!theme) console.error("There was a problem loading a theme. Even the backup failed...");
+
         this.state = {
-            theme: require(`../themes/${process.env["THEME"]}/index`).default
+            theme
         };
     }
 
@@ -37,7 +56,7 @@ export class Layout extends React.Component {
                 )
             ) : (
                 <Switch>
-                    <Route path="/admin" component={(props) => {
+                    <Route path="/pc_admin" component={(props) => {
                         return <AdminDashboard {...props} {...this.props} />;
                     }} />
                     <Route path="/" component={(props) => {

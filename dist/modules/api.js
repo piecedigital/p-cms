@@ -5,19 +5,21 @@ var mongoose_1 = require("mongoose");
 var render_1 = require("./render");
 var fs_1 = require("fs");
 var path_1 = require("path");
+var helpers_1 = require("./helpers");
 var app = express();
 var dbs = null;
 var store = null;
 app.post("/add-project", function (req, res) {
-    var project = {
+    var project = Object.assign({
         _id: new mongoose_1.Types.ObjectId(),
         name: req.body["name"],
         projectURL: req.body["project-url"],
         description: req.body["description"],
-        imageURL: req.body["image-url"],
+        imageURL: req.body["image-url"] || "/public/media/images/cat-dog.jpg",
         tools: [],
-    };
-    dbs.dbs.collection("portfolios").save(project, function (err) {
+        __v: 0,
+    }, helpers_1.generatedDatabaseDates());
+    dbs.dbs.collection("portfolios").insertOne(project, function (err) {
         if (err)
             return console.error(err);
         console.log("project added");

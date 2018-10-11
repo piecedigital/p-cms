@@ -3,6 +3,9 @@ import { Route, Switch } from "react-router";
 import { Link } from "react-router-dom";
 import { Plugin } from "../modules/plugin.class";
 import { $404 } from "./404";
+import header from "./partials/header";
+import { renderOptions } from "../modules/render";
+import footer from "./partials/footer";
 
 export class AdminDashboard extends React.Component {
     state: {
@@ -20,23 +23,26 @@ export class AdminDashboard extends React.Component {
 
     render() {
         return ([
+            header({
+                title: "Admin Dashboard"
+            } as renderOptions),
             <div className="admin-dashboard">
                 <div className="nav">
                     <div className="item">
                         <Link to={`/`}>View Site</Link>
                     </div>
                     <div className="item">
-                        <Link to={`/admin/logout`}>Logout</Link>
+                        <Link to={`/pc_admin/logout`}>Logout</Link>
                     </div>
                 </div>
                 <section className="side-panel">
-                <Link to={`/admin`} className="row logo">
+                <Link to={`/pc_admin`} className="row logo">
                     <h4>My CMS</h4>
                 </Link>
                 {
                     this.state.adminViews.map((view: Plugin, ind) => {
                         return (
-                            <Link key={`${view.directory}-${ind}`} to={`/admin/plugin/${view.slug()}`} className="row">
+                            <Link key={`${view.directory}-${ind}`} to={`/pc_admin/plugin/${view.slug()}`} className="row">
                                 <h4>{view.name}</h4>
                             </Link>
                         );
@@ -45,19 +51,20 @@ export class AdminDashboard extends React.Component {
                 </section>
                 <section className="main-content">
                     <Switch>
-                        <Route path="/admin/login" render={(props) => <AdminLogin {...props} {...this.props} />} />
+                        <Route path="/pc_admin/login" render={(props) => <AdminLogin {...props} {...this.props} />} />
                         {
                             this.state.adminViews.map(view => {
                                 return (
-                                    <Route key={view.name} path={`/admin/plugin/${view.directory}`} render={(props) => <view.component {...props} {...this.props} />} />
+                                    <Route key={view.name} path={`/pc_admin/plugin/${view.directory}`} render={(props) => <view.component {...props} {...this.props} />} />
                                 );
                             })
                         }
-                        <Route path="/admin" render={(props) => <AdminDashboardWelcome {...props} {...this.props} />} />
+                        <Route path="/pc_admin" render={(props) => <AdminDashboardWelcome {...props} {...this.props} />} />
                         <Route path="*" render={(props) => <$404 {...props} {...this.props} />} />
                     </Switch>
                 </section>
-            </div>
+            </div>,
+            footer(null)
         ]);
     }
 }
@@ -103,7 +110,7 @@ export class AdminLogin extends React.Component {
                             Administration
                         </h1>
                     </header>
-                    <form action="/admin/login" method="POST">
+                    <form action="/pc_admin/login" method="POST">
                         <input type="hidden" name="_csrf" value={this.props.csrfToken}/>
                         <div>
                             <label htmlFor="">Username:</label><br/>

@@ -1,5 +1,8 @@
 import * as React from "react";
 import { Project } from "../../plugins/custom/portfolio/project.class";
+import header from "./partials/header";
+import { renderOptions } from "../../modules/render";
+import footer from "./partials/footer";
 
 export default class Home extends React.Component {
     state: {
@@ -18,6 +21,9 @@ export default class Home extends React.Component {
 
     render() {
         return ([
+            header({
+                title: "Admin Dashboard"
+            } as renderOptions),
             <nav>
                 <div className="page-wrap">
                 </div>
@@ -76,7 +82,8 @@ export default class Home extends React.Component {
                         &copy; Copyright  Darryl Dixon, 2018. All Rights Reserved.
                     </footer>
                 </div>
-            </section>
+            </section>,
+            footer(null)
         ]);
     }
 }

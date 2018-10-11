@@ -46,4 +46,7 @@ export interface ProjectInterface {
     projectURL?: string;
     imageURL?: string;
     tools?: ToolCategory[];
+    createdAt?: Date,
+    updatedAt?: Date,
+    __v?: number,
 }

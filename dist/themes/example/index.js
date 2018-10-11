@@ -14,6 +14,8 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
+var header_1 = require("./partials/header");
+var footer_1 = require("./partials/footer");
 var Home = /** @class */ (function (_super) {
     __extends(Home, _super);
     function Home(props) {
@@ -26,6 +28,9 @@ var Home = /** @class */ (function (_super) {
     }
     Home.prototype.render = function () {
         return ([
+            header_1.default({
+                title: "Admin Dashboard"
+            }),
             React.createElement("nav", null,
                 React.createElement("div", { className: "page-wrap" })),
             React.createElement("section", { className: "header" },
@@ -56,7 +61,8 @@ var Home = /** @class */ (function (_super) {
                 React.createElement("div", { className: "section-separator" },
                     React.createElement("div", { className: "triangle" })),
                 React.createElement("div", { className: "page-wrap" },
-                    React.createElement("footer", null, "\u00A9 Copyright  Darryl Dixon, 2018. All Rights Reserved.")))
+                    React.createElement("footer", null, "\u00A9 Copyright  Darryl Dixon, 2018. All Rights Reserved."))),
+            footer_1.default(null)
         ]);
     };
     return Home;

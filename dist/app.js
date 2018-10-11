@@ -63,13 +63,12 @@ dbs.successCallback = function () {
     app.use(cookieParser());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
-    app.use(theme_routes_1.default(dbs, store));
-    app.use("/admin", admin_routes_1.default(dbs, store));
+    app.use("/pc_admin", admin_routes_1.default(dbs, store));
     app.use("/api", api_1.default(dbs, store));
-    var up = helpers_1.urlPrefixer("/admin");
+    app.use(theme_routes_1.default(dbs, store));
     app.get("*", function (req, res) {
         // console.log(req.path);
-        res.status(404).send(render_1.getView(up(req.url), {
+        res.status(404).send(render_1.getView(req.url, {
             title: "Not Found",
             viewName: "404"
         }));

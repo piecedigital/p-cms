@@ -32,9 +32,9 @@ var views = {
 function getView(url, options) {
     options.viewName = options.viewName;
     var View = views[options.viewName];
-    return "<!DOCTYPE html>\n    <html>\n    <head>\n        <meta charset=\"utf-8\" />\n        <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"/>\n        <title>" + options.title + "</title>\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n        <link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"/public/css/style.css\" />\n    </head>\n    <body>\n        <div class=\"react-app\">\n            " + server_1.renderToString((View) ? (React.createElement(react_router_1.StaticRouter, { location: url, context: context },
+    return "" + server_1.renderToString((View) ? (React.createElement(react_router_1.StaticRouter, { location: url, context: context },
         React.createElement(react_router_1.Route, { exact: true, component: function (props) { return React.createElement(layout_1.Layout, __assign({}, props, options.data, { database: options.database })); } },
             React.createElement(View, null)))) : (React.createElement(react_router_1.StaticRouter, { location: url, context: context },
-        React.createElement(react_router_1.Route, { exact: true, component: function (props) { return React.createElement(layout_1.Layout, __assign({}, props, options.data, { database: options.database })); } })))) + "\n        </div>\n    </body>\n    </html>";
+        React.createElement(react_router_1.Route, { exact: true, component: function (props) { return React.createElement(layout_1.Layout, __assign({}, props, options.data, { database: options.database })); } }))));
 }
 exports.getView = getView;

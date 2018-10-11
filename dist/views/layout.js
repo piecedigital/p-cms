@@ -41,8 +41,29 @@ var Layout = /** @class */ (function (_super) {
     function Layout(props) {
         var _this = _super.call(this, props) || this;
         // console.log("yerrrr", props.match, props.location);
+        var theme = null;
+        try {
+            theme = require("../themes/" + process.env["THEME"] + "/index").danger();
+        }
+        catch (error) {
+            // console.error(error);
+            try {
+                theme = require("../themes/" + process.env["THEME"] + "/index").default;
+            }
+            catch (error) {
+                // console.error(error);
+                try {
+                    theme = require("../themes/example/index").default;
+                }
+                catch (error) {
+                    // console.error(error);
+                }
+            }
+        }
+        if (!theme)
+            console.error("There was a problem loading a theme. Even the backup failed...");
         _this.state = {
-            theme: require("../themes/" + process.env["THEME"] + "/index").default
+            theme: theme
         };
         return _this;
     }
@@ -50,7 +71,7 @@ var Layout = /** @class */ (function (_super) {
         var _this = this;
         return ([
             (this.props.children) ? (React.Children.map(this.props.children, function (child) { return React.cloneElement(child, _this.props); })) : (React.createElement(react_router_1.Switch, null,
-                React.createElement(react_router_1.Route, { path: "/admin", component: function (props) {
+                React.createElement(react_router_1.Route, { path: "/pc_admin", component: function (props) {
                         return React.createElement(admin_1.AdminDashboard, __assign({}, props, _this.props));
                     } }),
                 React.createElement(react_router_1.Route, { path: "/", component: function (props) {

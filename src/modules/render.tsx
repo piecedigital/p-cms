@@ -31,18 +31,7 @@ export function getView(url: string, options: renderOptions): string {
     options.viewName = options.viewName;
     const View = views[options.viewName];
 
-    return `<!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>${options.title}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" type="text/css" media="screen" href="/public/css/style.css" />
-    </head>
-    <body>
-        <div class="react-app">
-            ${renderToString(
+    return `${renderToString(
                 (View) ? (
                     <Router location={url} context={context}>
                         <Route exact={true} component={(props) => <Layout {...props} {...options.data} database={options.database} />} >
@@ -54,8 +43,5 @@ export function getView(url: string, options: renderOptions): string {
                         <Route exact={true} component={(props) => <Layout {...props} {...options.data} database={options.database} />} />
                     </Router>
                 )
-            )}
-        </div>
-    </body>
-    </html>`;
+            )}`;
 }
