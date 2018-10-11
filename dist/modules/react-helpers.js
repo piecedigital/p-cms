@@ -15,20 +15,30 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
 var react_router_1 = require("react-router");
-function dangerouslySetHTML(html, className) {
-    if (className === void 0) { className = ""; }
+var dangerousHTML = /** @class */ (function () {
+    function dangerousHTML(route, html, className) {
+        if (className === void 0) { className = ""; }
+        this.route = route;
+        this.html = html;
+        this.className = className;
+    }
+    return dangerousHTML;
+}());
+exports.dangerousHTML = dangerousHTML;
+function dangerouslySetHTML(pages) {
     return /** @class */ (function (_super) {
         __extends(HTML, _super);
         function HTML() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
         HTML.prototype.render = function () {
-            return (React.createElement(react_router_1.Switch, null,
-                React.createElement(react_router_1.Route, { path: "/", component: function (props) {
-                        return React.createElement("div", { className: className, dangerouslySetInnerHTML: {
-                                __html: html
+            return (React.createElement(react_router_1.Switch, null, pages.map(function (html, ind) {
+                return React.createElement(react_router_1.Route, { key: ind, exact: true, path: html.route, component: function (props) {
+                        return React.createElement("div", { className: html.className, dangerouslySetInnerHTML: {
+                                __html: html.html
                             } });
-                    } })));
+                    } });
+            })));
         };
         return HTML;
     }(React.Component));

@@ -43,9 +43,11 @@ var AdminDashboard = /** @class */ (function (_super) {
     AdminDashboard.prototype.render = function () {
         var _this = this;
         return ([
-            header_1.default({
-                title: "Admin Dashboard"
-            }),
+            React.createElement("span", { dangerouslySetInnerHTML: {
+                    __html: header_1.default({
+                        title: "Admin Dashboard"
+                    })
+                } }),
             React.createElement("div", { className: "admin-dashboard" },
                 React.createElement("div", { className: "nav" },
                     React.createElement("div", { className: "item" },
@@ -67,7 +69,9 @@ var AdminDashboard = /** @class */ (function (_super) {
                         }),
                         React.createElement(react_router_1.Route, { path: "/pc_admin", render: function (props) { return React.createElement(AdminDashboardWelcome, __assign({}, props, _this.props)); } }),
                         React.createElement(react_router_1.Route, { path: "*", render: function (props) { return React.createElement(_404_1.$404, __assign({}, props, _this.props)); } })))),
-            footer_1.default(null)
+            React.createElement("span", { dangerouslySetInnerHTML: {
+                    __html: footer_1.default(null)
+                } })
         ]);
     };
     return AdminDashboard;

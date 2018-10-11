@@ -5,8 +5,11 @@ var fs_1 = require("fs");
 var path_1 = require("path");
 function danger() {
     var header = fs_1.readFileSync(path_1.join(__dirname, "partials/header.html")).toString();
-    var body = fs_1.readFileSync(path_1.join(__dirname, "index.html")).toString();
     var footer = fs_1.readFileSync(path_1.join(__dirname, "partials/footer.html")).toString();
-    return react_helpers_1.dangerouslySetHTML("" + header + body + footer);
+    var homeBody = fs_1.readFileSync(path_1.join(__dirname, "index.html")).toString();
+    var foobarBody = fs_1.readFileSync(path_1.join(__dirname, "index.1.html")).toString();
+    var home = new react_helpers_1.dangerousHTML("/", "" + header + homeBody + footer);
+    var foobar = new react_helpers_1.dangerousHTML("/foobar", "" + header + foobarBody + footer);
+    return react_helpers_1.dangerouslySetHTML([home, foobar]);
 }
 exports.danger = danger;

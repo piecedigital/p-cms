@@ -23,9 +23,11 @@ export class AdminDashboard extends React.Component {
 
     render() {
         return ([
-            header({
-                title: "Admin Dashboard"
-            } as renderOptions),
+            <span dangerouslySetInnerHTML={{
+                __html: header({
+                    title: "Admin Dashboard"
+                } as renderOptions)
+            }} />,
             <div className="admin-dashboard">
                 <div className="nav">
                     <div className="item">
@@ -64,7 +66,9 @@ export class AdminDashboard extends React.Component {
                     </Switch>
                 </section>
             </div>,
-            footer(null)
+            <span dangerouslySetInnerHTML={{
+                __html: footer(null)
+            }} />
         ]);
     }
 }
