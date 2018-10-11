@@ -316,8 +316,8 @@ form {
         display: none;
 
         &:checked + .theme {
-            box-shadow: 0 0 1px 4px white;
-            transform: scale(1.1, 1.1);
+            box-shadow: 0 0 1px 4px $dimSun;
+            // transform: scale(1.1, 1.1);
         }
     }
 
@@ -326,6 +326,7 @@ form {
         align-items: baseline;
         max-width: 25%;
         padding: 8px;
+        margin: 8px;
         background-color: black;
         color: white;
         cursor: pointer;
