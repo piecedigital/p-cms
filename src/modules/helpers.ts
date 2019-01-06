@@ -27,6 +27,7 @@ export function aggregateAllPluginData(dbs: Database, store: Store, options: Agg
 
         let index: number = -1;
 
+        // iterate and send plugin info to itter2 until there are no more plugins
         function itter1() {
             index++;
 
@@ -41,6 +42,7 @@ export function aggregateAllPluginData(dbs: Database, store: Store, options: Agg
             itter2(plugins[index]);
         }
 
+        // get database collection documents for a given plugin
         function itter2(plugin: Plugin) {
             console.log("getting plugin database data");
             if(plugin.databaseCollections.length == 0) {
@@ -49,8 +51,9 @@ export function aggregateAllPluginData(dbs: Database, store: Store, options: Agg
 
             let dataCollected = 0;
             plugin.databaseCollections.map((databaseName: string) => {
+                // make sure database collections don't clash
                 if(data[databaseName]) {
-                    console.error(`Database "${databaseName}" conflicts with an existing database of the same name`);
+                    console.error(`Database "${databaseName}" for plugin "${plugin.name}" conflicts with an existing database of the same name`);
                     return;
                 }
 
@@ -116,10 +119,16 @@ export interface loadedThemeData {
 export function getThemes(): loadedThemeData[] {
     return readdirSync(join(__dirname, `../themes`))
     .map((folder: string) => {
-        const tr: ThemeRegister = require(join(__dirname, "../themes", folder, "info.json"));
-        const component = require(join(__dirname, "../themes", folder, "index"));
-        return { tr, component, directory: folder };
-    });
+        try {
+            const tr: ThemeRegister = require(join(__dirname, "../themes", folder, "info.json"));
+            const component = require(join(__dirname, "../themes", folder, "index"));
+            return { tr, component, directory: folder };
+        }
+        catch(e) {
+            console.error(`Skipping "${folder}". Reason: ${e.message}` || e);
+            return null;
+        }
+    }).filter(x => !!x); //filters out null values
 }
 
 export function generatedDatabaseDates(): {

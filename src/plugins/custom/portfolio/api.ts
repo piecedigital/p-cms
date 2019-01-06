@@ -4,50 +4,42 @@ DO NOT REMOVE
 */
 import * as express from "express";
 import { Document, Types } from "mongoose";
-import { getView } from "./render";
-import Database from "./database";
-import Store from "./store";
-import { Project } from "../plugins/custom/portfolio/portfolio.class";
+import { getView } from "../../../modules/render";
+import Database from "../../../modules/database";
+import Store from "../../../modules/store";
+import { Project, ProjectModel } from "./portfolio.class";
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
-import { generatedDatabaseDates } from "./helpers";
+import { generatedDatabaseDates } from "../../../modules/helpers";
 
 const app = express();
 let dbs: Database = null;
 let store: Store = null;
-
-app.post("/apply-theme", (req, res) => {
-    console.log(req.body);
-
-    process.env["THEME"] = req.body.theme;
-    var file = JSON.parse(readFileSync(join(__dirname, "../register.json")).toString());
-    console.log(file);
-
-    file.theme = req.body.theme;
-
-    writeFileSync(join(__dirname, "../register.json"), JSON.stringify(file));
-
-    res.redirect(req.headers.referer);
-});
 // END REQUIRED CODE
 
 /*
 ADD YOUR CUSTOM ROUTES HERE
 */
 // Portfolio API
-/*
 app.post("/add-project", (req, res) => {
-    const project = Object.assign({
-        _id: new Types.ObjectId(),
+    const project = new ProjectModel({
         name: req.body["name"],
-        projectURL: req.body["project-url"],
         description: req.body["description"],
-        imageURL: req.body["image-url"] || "/public/media/images/cat-dog.jpg",
-        tools: [],
-        __v: 0,
-    } as Project, generatedDatabaseDates());
+        projectURL: req.body["project-url"],
+    });
 
-    dbs.dbs.collection("portfolios").insertOne(project, (err) => {
+    // Object.assign({
+    //     _id: new Types.ObjectId(),
+    //     name: req.body["name"],
+    //     projectURL: req.body["project-url"],
+    //     description: req.body["description"],
+    //     imageURL: req.body["image-url"] || "/public/media/images/cat-dog.jpg",
+    //     tools: [],
+    //     __v: 0,
+    // } as Project, generatedDatabaseDates());
+
+    // dbs.dbs.collection("portfolios").insertOne(project, (err) => {
+    project.save((err) => {
         if (err) return console.error(err);
         console.log("project added");
         res.redirect(req.headers.referer);
@@ -65,21 +57,13 @@ app.post("/remove-project", (req, res) => {
     });
     // res.redirect(req.headers.referer);
 });
-*/
 // END CUSTOM ROUTES
 
 /*
 THIS CODE IS REQUIRED
 DO NOT REMOVE
 */
-app.post("*", (req, res) => {
-    res.status(404).send(getView(req.url, {
-        title: "Not Found",
-        viewName: "404"
-    }));
-});
-
-export default function(db, str) {
+export default function (db, str) {
     dbs = db;
     store = str;
     return app;

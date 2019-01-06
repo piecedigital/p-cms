@@ -17,6 +17,7 @@ function aggregateAllPluginData(dbs, store, options, callback) {
             return;
         }
         var index = -1;
+        // iterate and send plugin info to itter2 until there are no more plugins
         function itter1() {
             index++;
             if (index >= plugins.length) {
@@ -27,6 +28,7 @@ function aggregateAllPluginData(dbs, store, options, callback) {
             data.adminViews.push(plugins[index]);
             itter2(plugins[index]);
         }
+        // get database collection documents for a given plugin
         function itter2(plugin) {
             console.log("getting plugin database data");
             if (plugin.databaseCollections.length == 0) {
@@ -34,8 +36,9 @@ function aggregateAllPluginData(dbs, store, options, callback) {
             }
             var dataCollected = 0;
             plugin.databaseCollections.map(function (databaseName) {
+                // make sure database collections don't clash
                 if (data[databaseName]) {
-                    console.error("Database \"" + databaseName + "\" conflicts with an existing database of the same name");
+                    console.error("Database \"" + databaseName + "\" for plugin \"" + plugin.name + "\" conflicts with an existing database of the same name");
                     return;
                 }
                 dbs.dbs.collection(databaseName).find({}, {}).toArray(function (err, docs) {
@@ -82,10 +85,16 @@ exports.getPlugins = getPlugins;
 function getThemes() {
     return fs_1.readdirSync(path_1.join(__dirname, "../themes"))
         .map(function (folder) {
-        var tr = require(path_1.join(__dirname, "../themes", folder, "info.json"));
-        var component = require(path_1.join(__dirname, "../themes", folder, "index"));
-        return { tr: tr, component: component, directory: folder };
-    });
+        try {
+            var tr = require(path_1.join(__dirname, "../themes", folder, "info.json"));
+            var component = require(path_1.join(__dirname, "../themes", folder, "index"));
+            return { tr: tr, component: component, directory: folder };
+        }
+        catch (e) {
+            console.error("Skipping \"" + folder + "\". Reason: " + e.message || e);
+            return null;
+        }
+    }).filter(function (x) { return !!x; }); //filters out null values
 }
 exports.getThemes = getThemes;
 function generatedDatabaseDates() {

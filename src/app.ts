@@ -7,6 +7,7 @@ import * as bcrypt from "bcryptjs";
 import adminRoutes from "./modules/admin-routes";
 import api from "./modules/api";
 import themeRoutes from "./modules/theme-routes";
+import pluginRoutes from "./modules/plugin-routes";
 import Database from "./modules/database";
 import Store from "./modules/store";
 import { getView } from "./modules/render";
@@ -39,7 +40,7 @@ dbs.successCallback = () => {
 
     // find or make temporary admin user
     dbs.AdminUserModel.findOne({
-        name: "darryl"
+        name: "admin"
     } as UserInterface, (err, res: Document) => {
         console.log("looking for admin user");
 
@@ -48,8 +49,8 @@ dbs.successCallback = () => {
 
             const newAdminUser = new dbs.AdminUserModel({
                 _id: new Types.ObjectId(),
-                name: "darryl",
-                password: bcrypt.hashSync("0123456789", bcrypt.genSaltSync())
+                name: "admin",
+                password: bcrypt.hashSync("password", bcrypt.genSaltSync())
             } as User);
 
             newAdminUser.save((err) => {
@@ -74,6 +75,12 @@ dbs.successCallback = () => {
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
     app.use("/pc_admin", adminRoutes(dbs, store));
+    pluginRoutes("standard", store, data => {
+        app.use("/api", data(dbs, store));
+    });
+    pluginRoutes("custom", store, data => {
+        app.use("/api", data(dbs, store));
+    });
     app.use("/api", api(dbs, store));
     app.use(themeRoutes(dbs, store));
     app.get("*", (req, res) => {

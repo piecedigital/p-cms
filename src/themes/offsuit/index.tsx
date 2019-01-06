@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Project } from "../../plugins/custom/portfolio/portfolio.class";
 import header from "./partials/header";
 import { renderOptions } from "../../modules/render";
 import footer from "./partials/footer";
@@ -33,7 +32,7 @@ export default class Index extends React.Component {
 
 class Home extends React.Component {
     state: {
-        portfolios: Project[]
+        portfolios: string[]
     };
     props: any;
 
@@ -82,14 +81,10 @@ class Home extends React.Component {
                     <div className="separator"></div>
                     <div className="image-cta">
                         {
-                            this.state.portfolios.map((project: Project, ind) => {
+                            this.state.portfolios.map((project: string, ind) => {
                                 return (
-                                    <div key={`${project.name}-${ind}`} className="img">
-                                        <a href={project.projectURL}>
-                                            <img src={project.imageURL} alt={`project name: ${project.name}`} />
-                                            <div className="separator"></div>
-                                            <div>{project.name}</div>
-                                        </a>
+                                    <div key={`${project}-${ind}`} className="img">
+                                        project
                                     </div>
                                 );
                             })
@@ -113,7 +108,7 @@ class Home extends React.Component {
 
 class Foobar extends React.Component {
     state: {
-        portfolios: Project[]
+        portfolios: string[]
     };
     props: any;
 
@@ -162,14 +157,10 @@ class Foobar extends React.Component {
                     <div className="separator"></div>
                     <div className="image-cta">
                         {
-                            this.state.portfolios.map((project: Project, ind) => {
+                            this.state.portfolios.map((project: string, ind) => {
                                 return (
-                                    <div key={`${project.name}-${ind}`} className="img">
-                                        <a href={project.projectURL}>
-                                            <img src={project.imageURL} alt={`project name: ${project.name}`} />
-                                            <div className="separator"></div>
-                                            <div>{project.name}</div>
-                                        </a>
+                                    <div key={`${project}-${ind}`} className="img">
+                                        project
                                     </div>
                                 );
                             })

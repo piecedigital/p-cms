@@ -3,7 +3,7 @@ import { getThemes, loadedThemeData } from "../../../modules/helpers";
 
 export default class Index extends React.Component {
     state: {
-        themes
+        themes: loadedThemeData[]
     };
 
     constructor(props) {

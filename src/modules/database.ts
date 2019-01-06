@@ -55,7 +55,7 @@ class Database {
      * Generates the models for CRUD operations
      */
     private generateModels() {
-        this.AdminUserModel = model("adminUsers", UserSchema);
+        this.AdminUserModel = model("adminusers", UserSchema);
         this.SessionModel = model("sessions", SessionSchema);
     }
 }

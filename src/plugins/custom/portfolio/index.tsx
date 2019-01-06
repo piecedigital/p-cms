@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Project } from "./project.class";
+import { Project } from "./portfolio.class";
 
 export default class Index extends React.Component {
     state: {

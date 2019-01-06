@@ -78,11 +78,7 @@ var Home = /** @class */ (function (_super) {
                     React.createElement("div", { className: "title" }, "Projects"),
                     React.createElement("div", { className: "separator" }),
                     React.createElement("div", { className: "image-cta" }, this.state.portfolios.map(function (project, ind) {
-                        return (React.createElement("div", { key: project.name + "-" + ind, className: "img" },
-                            React.createElement("a", { href: project.projectURL },
-                                React.createElement("img", { src: project.imageURL, alt: "project name: " + project.name }),
-                                React.createElement("div", { className: "separator" }),
-                                React.createElement("div", null, project.name))));
+                        return (React.createElement("div", { key: project + "-" + ind, className: "img" }, "project"));
                     })))),
             React.createElement("section", { className: "footer" },
                 React.createElement("div", { className: "section-separator" },
@@ -125,11 +121,7 @@ var Foobar = /** @class */ (function (_super) {
                     React.createElement("div", { className: "title" }, "Projects"),
                     React.createElement("div", { className: "separator" }),
                     React.createElement("div", { className: "image-cta" }, this.state.portfolios.map(function (project, ind) {
-                        return (React.createElement("div", { key: project.name + "-" + ind, className: "img" },
-                            React.createElement("a", { href: project.projectURL },
-                                React.createElement("img", { src: project.imageURL, alt: "project name: " + project.name }),
-                                React.createElement("div", { className: "separator" }),
-                                React.createElement("div", null, project.name))));
+                        return (React.createElement("div", { key: project + "-" + ind, className: "img" }, "project"));
                     })))),
             React.createElement("section", { className: "footer" },
                 React.createElement("div", { className: "section-separator" },

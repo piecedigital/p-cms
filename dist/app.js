@@ -9,6 +9,7 @@ var bcrypt = require("bcryptjs");
 var admin_routes_1 = require("./modules/admin-routes");
 var api_1 = require("./modules/api");
 var theme_routes_1 = require("./modules/theme-routes");
+var plugin_routes_1 = require("./modules/plugin-routes");
 var database_1 = require("./modules/database");
 var store_1 = require("./modules/store");
 var render_1 = require("./modules/render");
@@ -34,15 +35,15 @@ dbs.successCallback = function () {
     var registerData = require(path.join(__dirname, "register.json"));
     // find or make temporary admin user
     dbs.AdminUserModel.findOne({
-        name: "darryl"
+        name: "admin"
     }, function (err, res) {
         console.log("looking for admin user");
         if (!res) {
             console.log("no admin user");
             var newAdminUser = new dbs.AdminUserModel({
                 _id: new mongoose_1.Types.ObjectId(),
-                name: "darryl",
-                password: bcrypt.hashSync("0123456789", bcrypt.genSaltSync())
+                name: "admin",
+                password: bcrypt.hashSync("password", bcrypt.genSaltSync())
             });
             newAdminUser.save(function (err) {
                 if (err)
@@ -64,6 +65,12 @@ dbs.successCallback = function () {
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
     app.use("/pc_admin", admin_routes_1.default(dbs, store));
+    plugin_routes_1.default("standard", store, function (data) {
+        app.use("/api", data(dbs, store));
+    });
+    plugin_routes_1.default("custom", store, function (data) {
+        app.use("/api", data(dbs, store));
+    });
     app.use("/api", api_1.default(dbs, store));
     app.use(theme_routes_1.default(dbs, store));
     app.get("*", function (req, res) {

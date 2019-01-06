@@ -38,7 +38,7 @@ var Database = /** @class */ (function () {
      * Generates the models for CRUD operations
      */
     Database.prototype.generateModels = function () {
-        this.AdminUserModel = mongoose_1.model("adminUsers", UserSchema);
+        this.AdminUserModel = mongoose_1.model("adminusers", UserSchema);
         this.SessionModel = mongoose_1.model("sessions", SessionSchema);
     };
     return Database;
