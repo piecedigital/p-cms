@@ -30,7 +30,7 @@ var Index = /** @class */ (function (_super) {
     Index.prototype.render = function () {
         var _this = this;
         return ([
-            React.createElement("div", { className: "", dangerouslySetInnerHTML: {
+            React.createElement("span", { className: "", dangerouslySetInnerHTML: {
                     __html: header_1.default({
                         title: "Home"
                     })

@@ -1,13 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
-var csrf = require("csurf");
 var render_1 = require("./render");
 var helpers_1 = require("./helpers");
 var app = express();
 var dbs = null;
 var store = null;
-var csrfProtection = csrf({ cookie: true });
 var up = helpers_1.urlPrefixer("");
 app.get("/", function (req, res) {
     // console.log("theme", req.path);

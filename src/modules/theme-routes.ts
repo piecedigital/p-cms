@@ -8,7 +8,6 @@ import { aggregateAllPluginData, urlPrefixer } from "./helpers";
 const app = express();
 let dbs: Database = null;
 let store: Store = null;
-const csrfProtection = csrf({ cookie: true });
 
 var up = urlPrefixer("");
 
