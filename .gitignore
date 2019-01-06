@@ -1,4 +1,11 @@
 node_modules/
-src/themes/
-!src/themes/example*/
-!src/themes/example*/*.*
+src/themes/*
+!src/themes/example/
+!src/themes/example/*.*
+!src/themes/example.1/
+!src/themes/example.1/*.*
+dist/themes/*
+!dist/themes/example/
+!dist/themes/example/*.*
+!dist/themes/example.1/
+!dist/themes/example.1/*.*
