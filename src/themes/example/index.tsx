@@ -190,3 +190,9 @@ class Foobar extends React.Component {
         ]);
     }
 }
+
+module.exports = {
+    Index,
+    Home,
+    Foobar,
+}

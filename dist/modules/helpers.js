@@ -86,6 +86,14 @@ function getThemes() {
     return fs_1.readdirSync(path_1.join(__dirname, "../themes"))
         .map(function (folder) {
         try {
+            // dyquire(join(__dirname, "../themes", folder, "info.json"));
+            dyquire(path_1.join(__dirname, "../themes", folder, "index.js"));
+        }
+        catch (e) {
+            // ignore
+            console.error(e.message);
+        }
+        try {
             var tr = require(path_1.join(__dirname, "../themes", folder, "info.json"));
             var component = require(path_1.join(__dirname, "../themes", folder, "index"));
             return { tr: tr, component: component, directory: folder };
@@ -105,3 +113,9 @@ function generatedDatabaseDates() {
     };
 }
 exports.generatedDatabaseDates = generatedDatabaseDates;
+function dyquire(filepath) {
+    console.log("dyquire", filepath);
+    var file = eval.bind({ global: global })(fs_1.readFileSync(filepath).toString());
+    console.log("dyquire", file);
+}
+exports.dyquire = dyquire;
