@@ -120,13 +120,6 @@ export function getThemes(): loadedThemeData[] {
     return readdirSync(join(__dirname, `../themes`))
     .map((folder: string) => {
         try {
-            // dyquire(join(__dirname, "../themes", folder, "info.json"));
-            dyquire(join(__dirname, "../themes", folder, "index.js"));
-        } catch(e) {
-            // ignore
-            console.error(e.message);
-        }
-        try {
             const tr: ThemeRegister = require(join(__dirname, "../themes", folder, "info.json"));
             const component = require(join(__dirname, "../themes", folder, "index"));
             return { tr, component, directory: folder };
@@ -149,10 +142,8 @@ export function generatedDatabaseDates(): {
     }
 }
 
-export function dyquire(filepath: string) {
-    console.log("dyquire", filepath);
-
-    const file =  eval.bind({global})(readFileSync(filepath).toString());
-
-    console.log("dyquire", file);
+export function regexURL(url: string) {
+    return new RegExp(url
+        .replace("/", "\\/")
+        .replace(".", "\\."), "i");
 }

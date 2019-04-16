@@ -1,6 +1,7 @@
 import * as React from "react";
 import { renderToString } from "react-dom/server";
 import { StaticRouter as Router, Route } from "react-router";
+import * as handlebars from "handlebars";
 // import views
 import { Layout } from "../views/layout";
 // import { Home } from "../views/home";
@@ -27,21 +28,20 @@ export interface renderOptions {
     database?: Database;
 }
 
-export function getView(url: string, options: renderOptions): string {
-    options.viewName = options.viewName;
-    const View = views[options.viewName];
+// export function getView(url: string, options: renderOptions): string {
+//     return `${renderToString(
+//         <Router location={url} context={context}>
+//             <Route exact={true} component={(props) => <Layout {...props} {...options.data} database={options.database} />} />
+//         </Router>
+//     )}`;
+// }
 
-    return `${renderToString(
-                (View) ? (
-                    <Router location={url} context={context}>
-                        <Route exact={true} component={(props) => <Layout {...props} {...options.data} database={options.database} />} >
-                            <View />
-                        </Route>
-                    </Router>
-                ) : (
-                    <Router location={url} context={context}>
-                        <Route exact={true} component={(props) => <Layout {...props} {...options.data} database={options.database} />} />
-                    </Router>
-                )
-            )}`;
+export function getView(url: string, options: renderOptions): string {
+    var source = Layout(url, options);
+
+    var template = handlebars.compile(source);
+
+    var result = template(options.data);
+
+    return result;
 }

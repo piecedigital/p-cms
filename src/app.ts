@@ -1,9 +1,10 @@
 import * as express from "express";
-import * as path from "path";
+import { join } from "path";
 import * as cookieParser from "cookie-parser";
 import * as bodyParser from "body-parser";
 import { Types } from "mongoose";
 import * as bcrypt from "bcryptjs";
+import * as helmet from "helmet";
 import adminRoutes from "./modules/admin-routes";
 import api from "./modules/api";
 import themeRoutes from "./modules/theme-routes";
@@ -36,9 +37,10 @@ dbs.successCallback = () => {
     const PORT = process.env["PORT"] || 8080;
     const app = express();
 
-    const registerData = require(path.join(__dirname, "register.json"));
+    const registerData = require(join(__dirname, "register.json"));
 
     // find or make temporary admin user
+    // TODO: implement real process for creating a first admin user
     dbs.AdminUserModel.findOne({
         name: "admin"
     } as UserInterface, (err, res: Document) => {
@@ -70,10 +72,24 @@ dbs.successCallback = () => {
     // load custom plugsins
     getPluginsAndRegister("custom");
 
-    app.use("/public", express.static(path.join(__dirname, "public")));
+    // header setup
+    app.use(helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                // styleSrc: ["'self'"],
+                // scriptSrc: ["'self'"],
+                reportUri: "/report-violation"
+            }
+        }
+    }));
+
+    app.use("/public", express.static(join(__dirname, "public")));
     app.use(cookieParser());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
+
+    // route setup
     app.use("/pc_admin", adminRoutes(dbs, store));
     pluginRoutes("standard", store, data => {
         app.use("/api", data(dbs, store));
@@ -103,7 +119,7 @@ dbs.errorCallback = () => {
 
     const app = express();
 
-    app.use("/public", express.static(path.join(__dirname, "public")));
+    app.use("/public", express.static(join(__dirname, "public")));
     app.get("*", (req, res) => {
         res.send(getView(req.url, {
             title: "Error",
