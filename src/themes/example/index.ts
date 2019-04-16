@@ -21,13 +21,13 @@ export default function(url: string) {
     };
 
     // url match
-    const xx = new RegExp(regexURL(url));
     const arr = Object.keys(routes);
     let page: string = "";
     let i = 0;
     while (!page && i < arr.length) {
         const key = arr[i];
-        const match = key.match(xx);
+        const xx = new RegExp(regexURL(key));
+        const match = url.match(xx);
 
         if (match) {
             page = routes[key].data;

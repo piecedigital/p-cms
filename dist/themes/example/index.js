@@ -15,13 +15,13 @@ function default_1(url) {
         },
     };
     // url match
-    var xx = new RegExp(helpers_1.regexURL(url));
     var arr = Object.keys(routes);
     var page = "";
     var i = 0;
     while (!page && i < arr.length) {
         var key = arr[i];
-        var match = key.match(xx);
+        var xx = new RegExp(helpers_1.regexURL(key));
+        var match = url.match(xx);
         if (match) {
             page = routes[key].data;
             break;

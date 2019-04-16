@@ -108,6 +108,7 @@ exports.generatedDatabaseDates = generatedDatabaseDates;
 function regexURL(url) {
     return new RegExp(url
         .replace("/", "\\/")
-        .replace(".", "\\."), "i");
+        .replace(".", "\\.")
+        .replace(/{.+}/, "(.+)"), "i");
 }
 exports.regexURL = regexURL;

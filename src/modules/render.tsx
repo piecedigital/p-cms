@@ -3,7 +3,7 @@ import { renderToString } from "react-dom/server";
 import { StaticRouter as Router, Route } from "react-router";
 import * as handlebars from "handlebars";
 // import views
-import { Layout } from "../views/layout";
+import { HandlebarsHandler, ReactHandler } from "../views/layout";
 // import { Home } from "../views/home";
 import { $404 } from "../views/404";
 import { InternalError } from "../views/internal-error";
@@ -28,20 +28,20 @@ export interface renderOptions {
     database?: Database;
 }
 
-// export function getView(url: string, options: renderOptions): string {
-//     return `${renderToString(
-//         <Router location={url} context={context}>
-//             <Route exact={true} component={(props) => <Layout {...props} {...options.data} database={options.database} />} />
-//         </Router>
-//     )}`;
-// }
-
 export function getView(url: string, options: renderOptions): string {
-    var source = Layout(url, options);
+    let result = "";
 
-    var template = handlebars.compile(source);
-
-    var result = template(options.data);
+    if(url.match(/^\/pc_admin/)) {
+        return `${renderToString(
+            <Router location={url} context={context}>
+                <Route exact={true} component={(props) => <ReactHandler {...props} {...options.data} database={options.database} />} />
+            </Router>
+        )}`;
+    } else {
+        const source = HandlebarsHandler(url, options);
+        const template = handlebars.compile(source);
+        result = template(options.data);
+    }
 
     return result;
 }

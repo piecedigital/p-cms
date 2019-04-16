@@ -145,5 +145,6 @@ export function generatedDatabaseDates(): {
 export function regexURL(url: string) {
     return new RegExp(url
         .replace("/", "\\/")
-        .replace(".", "\\."), "i");
+        .replace(".", "\\.")
+        .replace(/{.+}/, "(.+)"), "i");
 }
