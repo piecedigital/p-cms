@@ -41,8 +41,6 @@ export function getView(url: string, options: renderOptions): string {
         const source = HandlebarsHandler(url, options);
         const template = handlebars.compile(source.page);
         result = template(Object.assign(options, source.params));
-        console.log(source.params);
-
     }
 
     return result;

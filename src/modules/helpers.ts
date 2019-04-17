@@ -19,7 +19,7 @@ export function aggregateAllPluginData(dbs: Database, store: Store, options: Agg
             adminViews: []
         };
 
-        // variable used to track how many databases have been queried
+        // variable used to track how many collections have been queried
         if(plugins.length == 0) {
             res(data);
             return;
@@ -42,7 +42,7 @@ export function aggregateAllPluginData(dbs: Database, store: Store, options: Agg
             itter2(plugins[index]);
         }
 
-        // get database collection documents for a given plugin
+        // get collection documents for a given plugin
         function itter2(plugin: Plugin) {
             console.log("getting plugin database data");
             if(plugin.databaseCollections.length == 0) {
@@ -186,8 +186,6 @@ export function pickPage(url: string, routes: Record<string, Route>): PageResult
         const match = url.match(xx);
 
         if (match) {
-            console.log(i);
-
             var paramList = Object.keys(x.params);
             paramList.unshift(null);
             match.map((x, i) => {

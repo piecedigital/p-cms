@@ -1,0 +1,23 @@
+{
+    "/foobar/{:id}": {
+        "page": "foobar.handlebars"
+    },
+    "/foobar": {
+        "props": {
+            "title": "FUBAR"
+        },
+        "page": "foobar.handlebars"
+    },
+    "/$": {
+        "props": {
+            "title": "Home sweet home"
+        },
+        "page": "home.handlebars"
+    },
+    "404": {
+        "props": {
+            "title": "404: Not Found"
+        },
+        "page": "404.handlebars"
+    }
+}

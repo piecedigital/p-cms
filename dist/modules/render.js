@@ -40,7 +40,6 @@ function getView(url, options) {
         var source = layout_1.HandlebarsHandler(url, options);
         var template = handlebars.compile(source.page);
         result = template(Object.assign(options, source.params));
-        console.log(source.params);
     }
     return result;
 }
