@@ -1,0 +1,58 @@
+<nav>
+    <div class="page-wrap">
+    </div>
+</nav>
+<section class="header">
+    <div class="page-wrap">
+        <header>
+            <h1>
+                Welcome To This Website
+            </h1>
+        </header>
+    </div>
+</section>
+<section>
+    <div class="section-separator">
+        <div class="triangle"></div>
+    </div>
+    <div class="page-wrap">
+        <p>
+            <span class="bold">Lorem ipsum dolor sit amet</span>, consectetur adipiscing elit. Curabitur ac massa et
+            purus faucibus pulvinar vitae consequat nunc. Class aptent taciti sociosqu ad litora torquent per conubia
+            nostra, per inceptos himenaeos. Cras varius leo nulla, ac condimentum turpis pellentesque tincidunt.
+            Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+        </p>
+    </div>
+</section>
+<section>
+    <div class="section-separator">
+        <div class="triangle"></div>
+    </div>
+    <div class="page-wrap">
+        <div class="title">
+            Projects
+        </div>
+        <div class="separator"></div>
+        <div class="image-cta">
+            {{#each data.portfolios}}
+                <div key={{name}}-{{ind}} class="img">
+                    <a href={{projectURL}}>
+                        <img src={{imageURL}} alt="project name: {{name}}" />
+                        <div class="separator"></div>
+                        <div>{{name}}</div>
+                    </a>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+<section class="footer">
+    <div class="section-separator">
+        <div class="triangle"></div>
+    </div>
+    <div class="page-wrap">
+        <footer>
+            &copy; Copyright Darryl Dixon, 2018. All Rights Reserved.
+        </footer>
+    </div>
+</section>

@@ -4,6 +4,10 @@ import { Switch, Route } from "react-router";
 import { $404 } from "../views/404";
 import { InternalError } from "../views/internal-error";
 import { AdminDashboard, AdminLogin } from "../views/admin";
+import { renderOptions } from "../modules/render";
+import { readFileSync } from "fs";
+import { join } from "path";
+import { PageResults } from "../modules/helpers";
 
 const views: Record<string, any> = {
     "admin": AdminDashboard,
@@ -12,7 +16,7 @@ const views: Record<string, any> = {
     "internalError": InternalError,
 }
 
-export class Layout extends React.Component {
+export class ReactHandler extends React.Component {
     state: {
         theme: any
     };
@@ -25,18 +29,13 @@ export class Layout extends React.Component {
         let theme = null;
 
         try {
-            theme = require(`../themes/${process.env["THEME"]}/index`).danger()
+            theme = require(`../themes/${process.env["THEME"]}/index`).default()
         } catch (error) {
             // console.error(error);
             try {
-                theme = require(`../themes/${process.env["THEME"]}/index`).default
+                theme = require(`../themes/example/index`).default()
             } catch (error) {
                 // console.error(error);
-                try {
-                    theme = require(`../themes/example/index`).default
-                } catch (error) {
-                    // console.error(error);
-                }
             }
         }
 
@@ -67,4 +66,21 @@ export class Layout extends React.Component {
             )
         ]);
     }
+}
+
+export const HandlebarsHandler = function (url: string, options: renderOptions) {
+    let theme: (url: string) => PageResults = null;
+
+    try {
+        theme = require(`../themes/${process.env["THEME"]}/index`).default
+    } catch (error) {
+        // console.error(error);
+        try {
+            theme = require(`../themes/example/index`).default
+        } catch (error) {
+            // console.error(error);
+        }
+    }
+
+    return theme(url);
 }

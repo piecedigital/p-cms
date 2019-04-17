@@ -9,8 +9,12 @@ export default class Index extends React.Component {
     constructor(props) {
         super(props);
 
+        var x = getThemes() || [];
+
+        // console.log(x);
+
         this.state = {
-            themes: getThemes() || []
+            themes: x
         };
     }
 

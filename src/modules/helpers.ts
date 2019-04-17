@@ -1,7 +1,7 @@
 import Store from "./store";
 import { Plugin, PluginRegister } from "./plugin.class";
 import Database from "./database";
-import { readdirSync } from "fs";
+import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
 
 export interface AggrOptions {
@@ -142,3 +142,71 @@ export function generatedDatabaseDates(): {
     }
 }
 
+export interface regexURLreturn {
+    regexURL?: RegExp;
+    params?: Record<string, any>;
+}
+
+export function regexURL(url: string) {
+    let x: regexURLreturn = {
+        params: {}
+    };
+
+    x.regexURL = new RegExp(url
+        .replace("/", "\\/")
+        .replace(".", "\\.")
+        .replace(/{:[\w\d\-_]+}/g, (_) => {
+            x.params[_.replace(/({|})/g, "")] = null;
+            return "(.+)";
+        }), "i");
+
+    return x;
+}
+
+export interface Route {
+    page: (params: Record<string, any>) => string;
+    props?: Record<string, any>
+}
+
+export interface PageResults {
+    page: string;
+    params: Record<string, any>;
+}
+
+export function pickPage(url: string, routes: Record<string, Route>): PageResults {
+    const arr = Object.keys(routes);
+    let params: Record<string, any> = {};
+    let page: string = "";
+    let i = 0;
+    while (!page && i < arr.length) {
+        const routeString = arr[i];
+        params = routes[routeString].props || {};
+        const x = regexURL(routeString);
+        const xx = new RegExp(x.regexURL);
+        const match = url.match(xx);
+
+        if (match) {
+            console.log(i);
+
+            var paramList = Object.keys(x.params);
+            paramList.unshift(null);
+            match.map((x, i) => {
+                if(i>0) {
+                    params[paramList[i]] = x;
+                }
+            });
+            page = routes[routeString].page(params);
+            break;
+        }
+        i++;
+    }
+
+    if(!page) {
+        const routeString = "404";
+        page = routes[routeString].page(params);
+    }
+    return {
+        page,
+        params
+    };
+}

@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var express = require("express");
-var path = require("path");
+var path_1 = require("path");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var mongoose_1 = require("mongoose");
 var bcrypt = require("bcryptjs");
+var helmet = require("helmet");
 var admin_routes_1 = require("./modules/admin-routes");
 var api_1 = require("./modules/api");
 var theme_routes_1 = require("./modules/theme-routes");
@@ -32,8 +33,9 @@ function getPluginsAndRegister(pluginType) {
 dbs.successCallback = function () {
     var PORT = process.env["PORT"] || 8080;
     var app = express();
-    var registerData = require(path.join(__dirname, "register.json"));
+    var registerData = require(path_1.join(__dirname, "register.json"));
     // find or make temporary admin user
+    // TODO: implement real process for creating a first admin user
     dbs.AdminUserModel.findOne({
         name: "admin"
     }, function (err, res) {
@@ -60,10 +62,30 @@ dbs.successCallback = function () {
     getPluginsAndRegister();
     // load custom plugsins
     getPluginsAndRegister("custom");
-    app.use("/public", express.static(path.join(__dirname, "public")));
+    // header setup
+    app.use(helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                // styleSrc: ["'self'"],
+                // scriptSrc: ["'self'"],
+                reportUri: "/report-violation"
+            }
+        }
+    }));
+    app.use("/favicon.ico", function (req, res) {
+        try {
+            res.sendFile(path_1.join(__dirname, "public/media/images/favicon.ico"));
+        }
+        catch (e) {
+            console.log("Welp... guess no favicon");
+        }
+    });
+    app.use("/public", express.static(path_1.join(__dirname, "public")));
     app.use(cookieParser());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
+    // route setup
     app.use("/pc_admin", admin_routes_1.default(dbs, store));
     plugin_routes_1.default("standard", store, function (data) {
         app.use("/api", data(dbs, store));
@@ -88,7 +110,7 @@ dbs.errorCallback = function () {
     console.log("Fail fallback server");
     var PORT = process.env["PORT"] || 8080;
     var app = express();
-    app.use("/public", express.static(path.join(__dirname, "public")));
+    app.use("/public", express.static(path_1.join(__dirname, "public")));
     app.get("*", function (req, res) {
         res.send(render_1.getView(req.url, {
             title: "Error",

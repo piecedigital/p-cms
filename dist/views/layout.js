@@ -1,21 +1,27 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
@@ -30,28 +36,22 @@ var views = {
     "404": _404_1.$404,
     "internalError": internal_error_1.InternalError,
 };
-var Layout = /** @class */ (function (_super) {
-    __extends(Layout, _super);
-    function Layout(props) {
+var ReactHandler = /** @class */ (function (_super) {
+    __extends(ReactHandler, _super);
+    function ReactHandler(props) {
         var _this = _super.call(this, props) || this;
         // console.log("yerrrr", props.match, props.location);
         var theme = null;
         try {
-            theme = require("../themes/" + process.env["THEME"] + "/index").danger();
+            theme = require("../themes/" + process.env["THEME"] + "/index").default();
         }
         catch (error) {
             // console.error(error);
             try {
-                theme = require("../themes/" + process.env["THEME"] + "/index").default;
+                theme = require("../themes/example/index").default();
             }
             catch (error) {
                 // console.error(error);
-                try {
-                    theme = require("../themes/example/index").default;
-                }
-                catch (error) {
-                    // console.error(error);
-                }
             }
         }
         if (!theme)
@@ -61,7 +61,7 @@ var Layout = /** @class */ (function (_super) {
         };
         return _this;
     }
-    Layout.prototype.render = function () {
+    ReactHandler.prototype.render = function () {
         var _this = this;
         return ([
             (this.props.children) ? (React.Children.map(this.props.children, function (child) { return React.cloneElement(child, _this.props); })) : (React.createElement(react_router_1.Switch, null,
@@ -73,6 +73,22 @@ var Layout = /** @class */ (function (_super) {
                     } })))
         ]);
     };
-    return Layout;
+    return ReactHandler;
 }(React.Component));
-exports.Layout = Layout;
+exports.ReactHandler = ReactHandler;
+exports.HandlebarsHandler = function (url, options) {
+    var theme = null;
+    try {
+        theme = require("../themes/" + process.env["THEME"] + "/index").default;
+    }
+    catch (error) {
+        // console.error(error);
+        try {
+            theme = require("../themes/example/index").default;
+        }
+        catch (error) {
+            // console.error(error);
+        }
+    }
+    return theme(url);
+};

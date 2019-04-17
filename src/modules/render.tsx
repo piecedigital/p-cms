@@ -1,8 +1,9 @@
 import * as React from "react";
 import { renderToString } from "react-dom/server";
 import { StaticRouter as Router, Route } from "react-router";
+import * as handlebars from "handlebars";
 // import views
-import { Layout } from "../views/layout";
+import { HandlebarsHandler, ReactHandler } from "../views/layout";
 // import { Home } from "../views/home";
 import { $404 } from "../views/404";
 import { InternalError } from "../views/internal-error";
@@ -28,20 +29,21 @@ export interface renderOptions {
 }
 
 export function getView(url: string, options: renderOptions): string {
-    options.viewName = options.viewName;
-    const View = views[options.viewName];
+    let result = "";
 
-    return `${renderToString(
-                (View) ? (
-                    <Router location={url} context={context}>
-                        <Route exact={true} component={(props) => <Layout {...props} {...options.data} database={options.database} />} >
-                            <View />
-                        </Route>
-                    </Router>
-                ) : (
-                    <Router location={url} context={context}>
-                        <Route exact={true} component={(props) => <Layout {...props} {...options.data} database={options.database} />} />
-                    </Router>
-                )
-            )}`;
+    if(url.match(/^\/pc_admin/)) {
+        return `${renderToString(
+            <Router location={url} context={context}>
+                <Route exact={true} component={(props) => <ReactHandler {...props} {...options.data} database={options.database} />} />
+            </Router>
+        )}`;
+    } else {
+        const source = HandlebarsHandler(url, options);
+        const template = handlebars.compile(source.page);
+        result = template(Object.assign(options, source.params));
+        console.log(source.params);
+
+    }
+
+    return result;
 }

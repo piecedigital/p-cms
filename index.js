@@ -3,7 +3,7 @@ cp.fork("./dist/app.js", [], {
     env: {
         DB_NAME: "pds-cms",
         DB_USER: "darryl",
-        DB_PASS: "4dmin",
+        DB_PASS: "password",
         DB_AUTH: "admin",
         DB_PORT: 27017,
         THEME: "example"
