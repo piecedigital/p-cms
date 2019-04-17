@@ -13,12 +13,16 @@ var up = helpers_1.urlPrefixer("/pc_admin");
 app.get("/", csrfProtection, function (req, res) {
     // console.log(`/`, req.path);
     auth_1.authorize(req, dbs, function () {
-        res.send(render_1.getView(up(req.url), {
+        render_1.getView(up(req.url), {
             title: "Admin Dashboard",
             data: {
                 adminViews: store.getPlugins()
             }
-        }));
+        })
+            .then(function (result) {
+            res.send(result);
+        })
+            .catch(function (e) { return console.error(e); });
     }, function () { return res.redirect("/pc_admin/login"); });
 });
 app.get("/logout", csrfProtection, function (req, res) {
@@ -32,23 +36,33 @@ app.get("/login", csrfProtection, function (req, res) {
     auth_1.authorize(req, dbs, function () {
         res.redirect("/pc_admin");
     }, function () {
-        res.send(render_1.getView(up(req.url), {
+        render_1.getView(up(req.url), {
             title: "Admin Login",
             data: {
                 csrfToken: req.csrfToken()
             }
-        }));
+        })
+            .then(function (result) {
+            res.send(result);
+        })
+            .catch(function (e) { return console.error(e); });
     });
 });
 app.get(/^\/plugin\/(.+)?$/i, csrfProtection, function (req, res) {
-    // console.log(`/^\/plugin\/(.+)?$/i`, req.path);
+    console.log("/^/plugin/(.+)?$/i", req.path);
     auth_1.authorize(req, dbs, function () {
         helpers_1.aggregateAllPluginData(dbs, store, null, function (data) {
             // console.log(data);
-            res.send(render_1.getView(up(req.url), {
+            render_1.getView(up(req.url), {
                 title: "Admin Dashboard",
-                data: data
-            }));
+                data: {
+                    adminViews: store.getPlugins()
+                }
+            })
+                .then(function (result) {
+                res.send(result);
+            })
+                .catch(function (e) { return console.error(e); });
         });
     }, function () { return res.redirect("/pc_admin/login"); });
 });

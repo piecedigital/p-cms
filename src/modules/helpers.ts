@@ -156,7 +156,7 @@ export function regexURL(url: string) {
         .replace("/", "\\/")
         .replace(".", "\\.")
         .replace(/{:[\w\d\-_]+}/g, (_) => {
-            x.params[_.replace(/({|})/g, "")] = null;
+            x.params[_.replace(/({:|})/g, "")] = null;
             return "(.+)";
         }), "i");
 

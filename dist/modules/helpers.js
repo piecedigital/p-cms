@@ -113,7 +113,7 @@ function regexURL(url) {
         .replace("/", "\\/")
         .replace(".", "\\.")
         .replace(/{:[\w\d\-_]+}/g, function (_) {
-        x.params[_.replace(/({|})/g, "")] = null;
+        x.params[_.replace(/({:|})/g, "")] = null;
         return "(.+)";
     }), "i");
     return x;

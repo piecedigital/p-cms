@@ -8,23 +8,28 @@ var dbs = null;
 var store = null;
 var up = helpers_1.urlPrefixer("");
 app.get("/", function (req, res) {
-    // console.log("theme", req.path);
     helpers_1.aggregateAllPluginData(dbs, store, null, function (data) {
-        // console.log(data);
-        res.send(render_1.getView(up(req.url), {
+        render_1.getView(up(req.url), {
             title: "Home",
             data: data
-        }));
+        })
+            .then(function (result) {
+            res.send(result);
+        })
+            .catch(function (e) { return console.error(e); });
     });
 });
 app.get("/*", function (req, res) {
-    // console.log("theme", req.path);
+    // TODO: move aggregation to render
     helpers_1.aggregateAllPluginData(dbs, store, null, function (data) {
-        // console.log(data);
-        res.send(render_1.getView(up(req.url), {
+        render_1.getView(up(req.url), {
             title: "Home",
             data: data
-        }));
+        })
+            .then(function (result) {
+            res.send(result);
+        })
+            .catch(function (e) { return console.error(e); });
     });
 });
 function default_1(db, str) {

@@ -19,12 +19,16 @@ app.get("/", csrfProtection, (req, res) => {
     authorize(
         req, dbs,
         () => {
-            res.send(getView(up(req.url), {
+            getView(up(req.url), {
                 title: "Admin Dashboard",
                 data: {
                     adminViews: store.getPlugins()
                 }
-            }));
+            })
+            .then(result => {
+                res.send(result);
+            })
+            .catch(e => console.error(e));
         },
         () => res.redirect("/pc_admin/login")
     );
@@ -42,26 +46,36 @@ app.get("/login", csrfProtection, (req, res) => {
     authorize(req, dbs, () => {
         res.redirect("/pc_admin");
     }, () => {
-        res.send(getView(up(req.url), {
+        getView(up(req.url), {
             title: "Admin Login",
             data: {
                 csrfToken: req.csrfToken()
             }
-        }));
+        })
+        .then(result => {
+            res.send(result);
+        })
+        .catch(e => console.error(e));
     });
 });
 
 app.get(/^\/plugin\/(.+)?$/i, csrfProtection, (req, res) => {
-    // console.log(`/^\/plugin\/(.+)?$/i`, req.path);
+    console.log(`/^\/plugin\/(.+)?$/i`, req.path);
     authorize(
         req, dbs,
         () => {
             aggregateAllPluginData(dbs, store, null, (data: any) => {
                 // console.log(data);
-                res.send(getView(up(req.url), {
+                getView(up(req.url), {
                     title: "Admin Dashboard",
-                    data
-                }));
+                    data: {
+                        adminViews: store.getPlugins()
+                    }
+                })
+                .then(result => {
+                    res.send(result);
+                })
+                .catch(e => console.error(e));
             });
         },
         () => res.redirect("/pc_admin/login")

@@ -28,20 +28,24 @@ export interface renderOptions {
     database?: Database;
 }
 
-export function getView(url: string, options: renderOptions): string {
-    let result = "";
+export function getView(url: string, options: renderOptions): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+        let result = "";
 
-    if(url.match(/^\/pc_admin/)) {
-        return `${renderToString(
-            <Router location={url} context={context}>
-                <Route exact={true} component={(props) => <ReactHandler {...props} {...options.data} database={options.database} />} />
-            </Router>
-        )}`;
-    } else {
-        const source = HandlebarsHandler(url, options);
-        const template = handlebars.compile(source.page);
-        result = template(Object.assign(options, source.params));
-    }
+        // TODO: more aggregation here
 
-    return result;
+        if(url.match(/^\/pc_admin/)) {
+            result = `${renderToString(
+                <Router location={url} context={context}>
+                    <Route exact={true} component={(props) => <ReactHandler {...props} {...options.data} database={options.database} />} />
+                </Router>
+            )}`;
+        } else {
+            const source = HandlebarsHandler(url, options);
+            const template = handlebars.compile(source.page);
+            result = template(Object.assign(options, source.params));
+        }
+
+        resolve(result);
+    });
 }

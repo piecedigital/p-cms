@@ -12,24 +12,29 @@ let store: Store = null;
 var up = urlPrefixer("");
 
 app.get("/", (req, res) => {
-    // console.log("theme", req.path);
     aggregateAllPluginData(dbs, store, null, (data) => {
-        // console.log(data);
-        res.send(getView(up(req.url), {
-            title: "Home",
-            data
-        }));
+        getView(up(req.url), {
+                title: "Home",
+                data
+            })
+            .then((result: string) => {
+                res.send(result);
+            })
+            .catch(e => console.error(e));
     });
 });
 
 app.get("/*", (req, res) => {
-    // console.log("theme", req.path);
+    // TODO: move aggregation to render
     aggregateAllPluginData(dbs, store, null, (data) => {
-        // console.log(data);
-        res.send(getView(up(req.url), {
-            title: "Home",
-            data
-        }));
+        getView(up(req.url), {
+                title: "Home",
+                data
+            })
+            .then((result: string) => {
+                res.send(result);
+            })
+            .catch(e => console.error(e));
     });
 });
 

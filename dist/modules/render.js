@@ -31,16 +31,19 @@ var views = {
     "internalError": internal_error_1.InternalError,
 };
 function getView(url, options) {
-    var result = "";
-    if (url.match(/^\/pc_admin/)) {
-        return "" + server_1.renderToString(React.createElement(react_router_1.StaticRouter, { location: url, context: context },
-            React.createElement(react_router_1.Route, { exact: true, component: function (props) { return React.createElement(layout_1.ReactHandler, __assign({}, props, options.data, { database: options.database })); } })));
-    }
-    else {
-        var source = layout_1.HandlebarsHandler(url, options);
-        var template = handlebars.compile(source.page);
-        result = template(Object.assign(options, source.params));
-    }
-    return result;
+    return new Promise(function (resolve, reject) {
+        var result = "";
+        // TODO: more aggregation here
+        if (url.match(/^\/pc_admin/)) {
+            result = "" + server_1.renderToString(React.createElement(react_router_1.StaticRouter, { location: url, context: context },
+                React.createElement(react_router_1.Route, { exact: true, component: function (props) { return React.createElement(layout_1.ReactHandler, __assign({}, props, options.data, { database: options.database })); } })));
+        }
+        else {
+            var source = layout_1.HandlebarsHandler(url, options);
+            var template = handlebars.compile(source.page);
+            result = template(Object.assign(options, source.params));
+        }
+        resolve(result);
+    });
 }
 exports.getView = getView;
