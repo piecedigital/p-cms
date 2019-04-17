@@ -90,9 +90,5 @@ exports.HandlebarsHandler = function (url, options) {
             // console.error(error);
         }
     }
-    var stuff = {
-        "/pc_admin": admin_1.AdminDashboard,
-        "/": theme(url)
-    };
-    return stuff["/"];
+    return theme(url);
 };

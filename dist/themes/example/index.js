@@ -4,30 +4,47 @@ var fs_1 = require("fs");
 var path_1 = require("path");
 var helpers_1 = require("../../modules/helpers");
 function default_1(url) {
+    console.log("called", url);
     var header = fs_1.readFileSync(path_1.join(__dirname, "partials/header.handlebars")).toString();
     var footer = fs_1.readFileSync(path_1.join(__dirname, "partials/footer.handlebars")).toString();
     var routes = {
-        "/": {
-            data: fs_1.readFileSync(path_1.join(__dirname, "pages/home.handlebars")).toString(),
+        "/foobar/{:id}": {
+            page: function (params) {
+                if (params === void 0) { params = null; }
+                return fs_1.readFileSync(path_1.join(__dirname, "pages/foobar.handlebars")).toString();
+            }
         },
         "/foobar": {
-            data: fs_1.readFileSync(path_1.join(__dirname, "pages/foobar.handlebars")).toString()
+            props: {
+                title: "FUBAR"
+            },
+            page: function (params) {
+                if (params === void 0) { params = null; }
+                return fs_1.readFileSync(path_1.join(__dirname, "pages/foobar.handlebars")).toString();
+            }
+        },
+        "/$": {
+            props: {
+                title: "Home alt"
+            },
+            page: function (params) {
+                if (params === void 0) { params = null; }
+                return fs_1.readFileSync(path_1.join(__dirname, "pages/home.handlebars")).toString();
+            }
+        },
+        "404": {
+            props: {
+                title: "404: Not Found"
+            },
+            page: function (params) {
+                if (params === void 0) { params = null; }
+                return fs_1.readFileSync(path_1.join(__dirname, "pages/home.handlebars")).toString();
+            }
         },
     };
     // url match
-    var arr = Object.keys(routes);
-    var page = "";
-    var i = 0;
-    while (!page && i < arr.length) {
-        var key = arr[i];
-        var xx = new RegExp(helpers_1.regexURL(key));
-        var match = url.match(xx);
-        if (match) {
-            page = routes[key].data;
-            break;
-        }
-        i++;
-    }
-    return header + page + footer;
+    var results = helpers_1.pickPage(url, routes);
+    results.page = header + results.page + footer;
+    return results;
 }
 exports.default = default_1;

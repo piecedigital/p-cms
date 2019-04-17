@@ -39,8 +39,10 @@ export function getView(url: string, options: renderOptions): string {
         )}`;
     } else {
         const source = HandlebarsHandler(url, options);
-        const template = handlebars.compile(source);
-        result = template(options.data);
+        const template = handlebars.compile(source.page);
+        result = template(Object.assign(options, source.params));
+        console.log(source.params);
+
     }
 
     return result;

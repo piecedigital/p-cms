@@ -73,6 +73,14 @@ dbs.successCallback = function () {
             }
         }
     }));
+    app.use("/favicon.ico", function (req, res) {
+        try {
+            res.sendFile(path_1.join(__dirname, "public/media/images/favicon.ico"));
+        }
+        catch (e) {
+            console.log("Welp... guess no favicon");
+        }
+    });
     app.use("/public", express.static(path_1.join(__dirname, "public")));
     app.use(cookieParser());
     app.use(bodyParser.urlencoded({ extended: false }));

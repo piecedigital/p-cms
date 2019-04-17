@@ -7,6 +7,7 @@ import { AdminDashboard, AdminLogin } from "../views/admin";
 import { renderOptions } from "../modules/render";
 import { readFileSync } from "fs";
 import { join } from "path";
+import { PageResults } from "../modules/helpers";
 
 const views: Record<string, any> = {
     "admin": AdminDashboard,
@@ -68,7 +69,7 @@ export class ReactHandler extends React.Component {
 }
 
 export const HandlebarsHandler = function (url: string, options: renderOptions) {
-    let theme: (url: string) => string = null;
+    let theme: (url: string) => PageResults = null;
 
     try {
         theme = require(`../themes/${process.env["THEME"]}/index`).default
@@ -81,10 +82,5 @@ export const HandlebarsHandler = function (url: string, options: renderOptions) 
         }
     }
 
-    let stuff: Record<string, any> = {
-        "/pc_admin": AdminDashboard,
-        "/": theme(url)
-    }
-
-    return stuff["/"];
+    return theme(url);
 }

@@ -1,40 +1,44 @@
 import { readFileSync } from "fs";
 import { join } from "path";
-import { regexURL } from "../../modules/helpers";
+import { regexURL, pickPage, PageResults, Route } from "../../modules/helpers";
 
-interface Route {
-    data: string;
-    // props?: Record<string, any>
-}
+export default function(url: string): PageResults {
+    console.log("called", url);
 
-export default function(url: string) {
     const header = readFileSync(join(__dirname, "partials/header.handlebars")).toString();
     const footer = readFileSync(join(__dirname, "partials/footer.handlebars")).toString();
 
     const routes: Record<string, Route> = {
-        "/": {
-            data: readFileSync(join(__dirname, "pages/home.handlebars")).toString(),
+        "/foobar/{:id}": {
+            page: (params: Record<string, any> = null) => {
+                return readFileSync(join(__dirname, "pages/foobar.handlebars")).toString()
+            }
         },
         "/foobar": {
-            data: readFileSync(join(__dirname, "pages/foobar.handlebars")).toString()
+            props: {
+                title: "FUBAR"
+            },
+            page: (params: Record<string, any> = null) => readFileSync(join(__dirname, "pages/foobar.handlebars")).toString()
+        },
+        "/$": {
+            props: {
+                title: "Home alt"
+            },
+            page: (params: Record<string, any> = null) => readFileSync(join(__dirname, "pages/home.handlebars")).toString()
+        },
+        "404": {
+            props: {
+                title: "404: Not Found"
+            },
+            page: (params: Record<string, any> = null) => {
+                return readFileSync(join(__dirname, "pages/home.handlebars")).toString();
+            }
         },
     };
 
     // url match
-    const arr = Object.keys(routes);
-    let page: string = "";
-    let i = 0;
-    while (!page && i < arr.length) {
-        const key = arr[i];
-        const xx = new RegExp(regexURL(key));
-        const match = url.match(xx);
+    const results = pickPage(url, routes);
+    results.page = header + results.page + footer;
 
-        if (match) {
-            page = routes[key].data;
-            break;
-        }
-        i++;
-    }
-
-    return header + page + footer;
+    return results
 }

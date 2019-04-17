@@ -106,9 +106,51 @@ function generatedDatabaseDates() {
 }
 exports.generatedDatabaseDates = generatedDatabaseDates;
 function regexURL(url) {
-    return new RegExp(url
+    var x = {
+        params: {}
+    };
+    x.regexURL = new RegExp(url
         .replace("/", "\\/")
         .replace(".", "\\.")
-        .replace(/{.+}/, "(.+)"), "i");
+        .replace(/{:[\w\d\-_]+}/g, function (_) {
+        x.params[_.replace(/({|})/g, "")] = null;
+        return "(.+)";
+    }), "i");
+    return x;
 }
 exports.regexURL = regexURL;
+function pickPage(url, routes) {
+    var arr = Object.keys(routes);
+    var params = {};
+    var page = "";
+    var i = 0;
+    while (!page && i < arr.length) {
+        var routeString = arr[i];
+        params = routes[routeString].props || {};
+        var x = regexURL(routeString);
+        var xx = new RegExp(x.regexURL);
+        var match = url.match(xx);
+        if (match) {
+            console.log(i);
+            var paramList = Object.keys(x.params);
+            paramList.unshift(null);
+            match.map(function (x, i) {
+                if (i > 0) {
+                    params[paramList[i]] = x;
+                }
+            });
+            page = routes[routeString].page(params);
+            break;
+        }
+        i++;
+    }
+    if (!page) {
+        var routeString = "404";
+        page = routes[routeString].page(params);
+    }
+    return {
+        page: page,
+        params: params
+    };
+}
+exports.pickPage = pickPage;
