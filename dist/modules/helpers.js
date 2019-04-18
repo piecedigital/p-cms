@@ -35,24 +35,23 @@ function aggregateAllPluginData(dbs, store, options, callback) {
                 itter1();
             }
             var dataCollected = 0;
-            plugin.databaseCollections.map(function (databaseName) {
+            plugin.databaseCollections.map(function (collectionName) {
                 // make sure database collections don't clash
-                if (data[databaseName]) {
-                    console.error("Database \"" + databaseName + "\" for plugin \"" + plugin.name + "\" conflicts with an existing database of the same name");
+                if (data[collectionName]) {
+                    console.error("Database \"" + collectionName + "\" for plugin \"" + plugin.name + "\" conflicts with an existing database of the same name");
                     return;
                 }
-                dbs.dbs.collection(databaseName).find({}, {}).toArray(function (err, docs) {
-                    if (docs === void 0) { docs = []; }
-                    if (err) {
-                        console.error(err);
-                    }
-                    else {
-                        data[databaseName] = docs;
-                    }
+                queryOneCollection(dbs, {
+                    collectionName: collectionName,
+                    query: {}
+                })
+                    .then(function (docs) {
+                    data[collectionName] = docs;
                     dataCollected++;
                     if (dataCollected == plugin.databaseCollections.length)
                         itter1();
-                });
+                })
+                    .catch(function (e) { return console.error(e); });
             });
         }
         itter1();
@@ -63,6 +62,39 @@ function aggregateAllPluginData(dbs, store, options, callback) {
         .catch(function (e) { return console.error(e); });
 }
 exports.aggregateAllPluginData = aggregateAllPluginData;
+function queryOneCollection(dbs, query) {
+    return new Promise(function (resolve, reject) {
+        var data = {};
+        if (!query)
+            return resolve(data);
+        dbs.dbs.collection(query.collectionName).find(query.query, {}).toArray(function (err, docs) {
+            if (docs === void 0) { docs = []; }
+            if (err) {
+                reject(err);
+            }
+            else {
+                data.collectionName = docs || [];
+                resolve(data);
+            }
+        });
+    });
+}
+exports.queryOneCollection = queryOneCollection;
+function queryManyCollections(dbs, queryList) {
+    return new Promise(function (resolve, reject) {
+        var data = {};
+        queryList.map(function (_a, ind) {
+            var collectionName = _a.collectionName, _b = _a.query, query = _b === void 0 ? {} : _b;
+            dbs.dbs.collection(collectionName).find(query, {}).toArray(function (err, docs) {
+                if (docs === void 0) { docs = []; }
+                data[collectionName] = docs || [];
+                if (ind === queryList.length - 1)
+                    resolve(data);
+            });
+        });
+    });
+}
+exports.queryManyCollections = queryManyCollections;
 function urlPrefixer(prefix) {
     return function (url) {
         return "" + prefix + url;
@@ -122,11 +154,13 @@ exports.regexURL = regexURL;
 function pickPage(url, routes) {
     var arr = Object.keys(routes);
     var params = {};
+    var query = [];
     var page = "";
     var i = 0;
     while (!page && i < arr.length) {
         var routeString = arr[i];
-        params = routes[routeString].props || {};
+        params = routes[routeString].params || {};
+        query = routes[routeString].query || [];
         var x = regexURL(routeString);
         var xx = new RegExp(x.regexURL);
         var match = url.match(xx);
@@ -149,7 +183,8 @@ function pickPage(url, routes) {
     }
     return {
         page: page,
-        params: params
+        params: params,
+        query: query
     };
 }
 exports.pickPage = pickPage;

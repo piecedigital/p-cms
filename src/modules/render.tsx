@@ -9,6 +9,7 @@ import { $404 } from "../views/404";
 import { InternalError } from "../views/internal-error";
 import { AdminDashboard, AdminLogin } from "../views/admin";
 import Database from "./database";
+import { queryOneCollection, queryManyCollections } from "./helpers";
 
 const context = {};
 
@@ -32,9 +33,9 @@ export function getView(url: string, options: renderOptions): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         let result = "";
 
-        // TODO: more aggregation here
-
         if(url.match(/^\/pc_admin/)) {
+            // TODO: move aggregation here
+
             result = `${renderToString(
                 <Router location={url} context={context}>
                     <Route exact={true} component={(props) => <ReactHandler {...props} {...options.data} database={options.database} />} />
@@ -42,10 +43,16 @@ export function getView(url: string, options: renderOptions): Promise<string> {
             )}`;
         } else {
             const source = HandlebarsHandler(url, options);
-            const template = handlebars.compile(source.page);
-            result = template(Object.assign(options, source.params));
-        }
+console.log(source);
 
-        resolve(result);
+            queryManyCollections(options.database, source.query)
+                .then((dbData) => {
+                    const template = handlebars.compile(source.page);
+                    result = template(Object.assign(options.data || {}, source.params, dbData));
+
+                    resolve(result);
+                })
+                .catch(e => reject(e));
+        }
     });
 }

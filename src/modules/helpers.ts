@@ -9,6 +9,11 @@ export interface AggrOptions {
     excludedDatabases?: string[]
 }
 
+export interface CollectionQuery {
+    collectionName: string;
+    query: Record<string, any>;
+}
+
 // gets every plugin and its database data
 export function aggregateAllPluginData(dbs: Database, store: Store, options: AggrOptions = {}, callback: (data: any) => void) {
     new Promise((res, rej) => {
@@ -50,22 +55,23 @@ export function aggregateAllPluginData(dbs: Database, store: Store, options: Agg
             }
 
             let dataCollected = 0;
-            plugin.databaseCollections.map((databaseName: string) => {
+            plugin.databaseCollections.map((collectionName: string) => {
                 // make sure database collections don't clash
-                if(data[databaseName]) {
-                    console.error(`Database "${databaseName}" for plugin "${plugin.name}" conflicts with an existing database of the same name`);
+                if(data[collectionName]) {
+                    console.error(`Database "${collectionName}" for plugin "${plugin.name}" conflicts with an existing database of the same name`);
                     return;
                 }
 
-                dbs.dbs.collection(databaseName).find({}, {}).toArray((err, docs: Document[] = []) => {
-                    if(err) {
-                        console.error(err);
-                    } else {
-                        data[databaseName] = docs;
-                    }
+                queryOneCollection(dbs, {
+                    collectionName,
+                    query: {}
+                })
+                .then((docs) => {
+                    data[collectionName] = docs;
                     dataCollected++;
                     if(dataCollected == plugin.databaseCollections.length) itter1();
-                });
+                })
+                .catch(e => console.error(e));
             });
         }
 
@@ -75,6 +81,37 @@ export function aggregateAllPluginData(dbs: Database, store: Store, options: Agg
         callback(data);
     })
     .catch(e => console.error(e));
+}
+
+export function queryOneCollection(dbs: Database, query: CollectionQuery) {
+    return new Promise<Record<string, Document[]>>((resolve, reject) => {
+        let data: Record<string, Document[]> = {};
+
+        if(!query) return resolve(data);
+
+        dbs.dbs.collection(query.collectionName).find(query.query, {}).toArray((err, docs: Document[] = []) => {
+            if (err) {
+                reject(err);
+            } else {
+                data.collectionName = docs || [];
+                resolve(data);
+            }
+        });
+    });
+}
+
+export function queryManyCollections(dbs: Database, queryList: CollectionQuery[] ) {
+    return new Promise<Record<string, Document[]>>((resolve, reject) => {
+        let data: Record<string, Document[]> = {};
+
+        queryList.map(({collectionName, query = {}}, ind) => {
+            dbs.dbs.collection(collectionName).find(query, {}).toArray((err, docs: Document[] = []) => {
+                data[collectionName] = docs || [];
+
+                if (ind === queryList.length-1) resolve(data);
+            });
+        });
+    });
 }
 
 export function urlPrefixer(prefix: string): (url: string) => string {
@@ -165,22 +202,26 @@ export function regexURL(url: string) {
 
 export interface Route {
     page: (params: Record<string, any>) => string;
-    props?: Record<string, any>
+    params?: Record<string, any>,
+    query: CollectionQuery[],
 }
 
 export interface PageResults {
     page: string;
     params: Record<string, any>;
+    query: CollectionQuery[];
 }
 
 export function pickPage(url: string, routes: Record<string, Route>): PageResults {
     const arr = Object.keys(routes);
     let params: Record<string, any> = {};
+    let query: CollectionQuery[] = [];
     let page: string = "";
     let i = 0;
     while (!page && i < arr.length) {
         const routeString = arr[i];
-        params = routes[routeString].props || {};
+        params = routes[routeString].params || {};
+        query = routes[routeString].query || [];
         const x = regexURL(routeString);
         const xx = new RegExp(x.regexURL);
         const match = url.match(xx);
@@ -205,6 +246,7 @@ export function pickPage(url: string, routes: Record<string, Route>): PageResult
     }
     return {
         page,
-        params
+        params,
+        query
     };
 }

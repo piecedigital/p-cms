@@ -1,21 +1,31 @@
 {
     "/foobar/{:id}": {
-        "page": "foobar.handlebars"
+        "page": "foobar.handlebars",
+        "query": [
+            {
+                "collectionName": "portfolios",
+                "query": {}
+            }
+        ]
     },
     "/foobar": {
-        "props": {
+        "params": {
             "title": "FUBAR"
         },
         "page": "foobar.handlebars"
     },
     "/$": {
-        "props": {
+        "params": {
             "title": "Home sweet home"
         },
-        "page": "home.handlebars"
+        "page": "home.handlebars",
+        "query": [{
+            "collectionName": "portfolios",
+            "query": {}
+        }]
     },
     "404": {
-        "props": {
+        "params": {
             "title": "404: Not Found"
         },
         "page": "404.handlebars"

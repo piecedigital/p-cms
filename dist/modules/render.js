@@ -21,6 +21,7 @@ var layout_1 = require("../views/layout");
 var _404_1 = require("../views/404");
 var internal_error_1 = require("../views/internal-error");
 var admin_1 = require("../views/admin");
+var helpers_1 = require("./helpers");
 var context = {};
 var views = {
     // "index": Home,
@@ -33,17 +34,22 @@ var views = {
 function getView(url, options) {
     return new Promise(function (resolve, reject) {
         var result = "";
-        // TODO: more aggregation here
         if (url.match(/^\/pc_admin/)) {
+            // TODO: move aggregation here
             result = "" + server_1.renderToString(React.createElement(react_router_1.StaticRouter, { location: url, context: context },
                 React.createElement(react_router_1.Route, { exact: true, component: function (props) { return React.createElement(layout_1.ReactHandler, __assign({}, props, options.data, { database: options.database })); } })));
         }
         else {
-            var source = layout_1.HandlebarsHandler(url, options);
-            var template = handlebars.compile(source.page);
-            result = template(Object.assign(options, source.params));
+            var source_1 = layout_1.HandlebarsHandler(url, options);
+            console.log(source_1);
+            helpers_1.queryManyCollections(options.database, source_1.query)
+                .then(function (dbData) {
+                var template = handlebars.compile(source_1.page);
+                result = template(Object.assign(options.data || {}, source_1.params, dbData));
+                resolve(result);
+            })
+                .catch(function (e) { return reject(e); });
         }
-        resolve(result);
     });
 }
 exports.getView = getView;

@@ -19,10 +19,12 @@ function default_1(url) {
     Object.keys(json).map(function (routeKey) {
         var routeData = json[routeKey];
         var data = {
-            props: {},
-            page: null
+            params: {},
+            page: null,
+            query: []
         };
-        data.props = routeData.props || {};
+        data.params = routeData.params || {};
+        data.query = routeData.query || [];
         data.page = function (params) {
             if (params === void 0) { params = null; }
             return fs_1.readFileSync(path_1.join(__dirname, "pages", routeData.page)).toString();

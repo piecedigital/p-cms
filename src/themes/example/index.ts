@@ -19,11 +19,13 @@ export default function(url: string): PageResults {
     Object.keys(json).map(routeKey => {
         const routeData = json[routeKey];
         let data: Route = {
-            props: {},
-            page: null
+            params: {},
+            page: null,
+            query: []
         };
 
-        data.props = routeData.props || {};
+        data.params = routeData.params || {};
+        data.query = routeData.query || [];
         data.page = (params: Record<string, any> = null) => {
             return readFileSync(join(__dirname, "pages", routeData.page)).toString()
         }
