@@ -38,6 +38,7 @@ function getView(url, options) {
             // TODO: move aggregation here
             result = "" + server_1.renderToString(React.createElement(react_router_1.StaticRouter, { location: url, context: context },
                 React.createElement(react_router_1.Route, { exact: true, component: function (props) { return React.createElement(layout_1.ReactHandler, __assign({}, props, options.data, { database: options.database })); } })));
+            resolve(result);
         }
         else {
             var source_1 = layout_1.HandlebarsHandler(url, options);

@@ -52,12 +52,12 @@ app.get(/^\/plugin\/(.+)?$/i, csrfProtection, function (req, res) {
     console.log("/^/plugin/(.+)?$/i", req.path);
     auth_1.authorize(req, dbs, function () {
         helpers_1.aggregateAllPluginData(dbs, store, null, function (data) {
-            // console.log(data);
+            // console.log("DATAAAAAAAA", data);
             render_1.getView(up(req.url), {
                 title: "Admin Dashboard",
-                data: {
+                data: Object.assign(data, {
                     adminViews: store.getPlugins()
-                }
+                })
             })
                 .then(function (result) {
                 res.send(result);

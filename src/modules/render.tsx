@@ -41,6 +41,8 @@ export function getView(url: string, options: renderOptions): Promise<string> {
                     <Route exact={true} component={(props) => <ReactHandler {...props} {...options.data} database={options.database} />} />
                 </Router>
             )}`;
+
+            resolve(result);
         } else {
             const source = HandlebarsHandler(url, options);
 

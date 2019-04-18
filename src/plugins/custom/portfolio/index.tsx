@@ -23,7 +23,7 @@ export default class Index extends React.Component {
                         {
                             this.state.portfolios.map((project: Project, ind) => {
                                 return (
-                                    <div key={`${project._id}`} className="project">
+                                    <div key={`${project.projectPK}`} className="project">
                                         <a href={`${project.projectURL}`}>
                                             <div className="image">
                                                 <img src={project.imageURL} alt={`${project.description}`} />
@@ -34,7 +34,7 @@ export default class Index extends React.Component {
                                                 </div>
                                             </div>
                                         </a>
-                                        <input type="checkbox" name="_id" id="" value={project._id.toHexString()}/>
+                                        <input type="checkbox" name="projectPK" value={project.projectPK}/>
                                     </div>
                                 );
                             })

@@ -4,7 +4,9 @@
         "query": [
             {
                 "collectionName": "portfolios",
-                "query": {}
+                "query": {
+                    "projectPK": "9c8cee60-61fe-11e9-b3ed-15bcaf8bd110"
+                }
             }
         ]
     },

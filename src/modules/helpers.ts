@@ -67,7 +67,7 @@ export function aggregateAllPluginData(dbs: Database, store: Store, options: Agg
                     query: {}
                 })
                 .then((docs) => {
-                    data[collectionName] = docs;
+                    data[collectionName] = docs[collectionName];
                     dataCollected++;
                     if(dataCollected == plugin.databaseCollections.length) itter1();
                 })
@@ -87,16 +87,19 @@ export function queryOneCollection(dbs: Database, query: CollectionQuery) {
     return new Promise<Record<string, Document[]>>((resolve, reject) => {
         let data: Record<string, Document[]> = {};
 
-        if(!query) return resolve(data);
-
-        dbs.dbs.collection(query.collectionName).find(query.query, {}).toArray((err, docs: Document[] = []) => {
-            if (err) {
-                reject(err);
-            } else {
-                data[query.collectionName] = docs || [];
-                resolve(data);
-            }
-        });
+        if(!query) {
+            // No query?! YOU GET NOTHING! YOU LOSE! GOOD DAY, SIR!
+            resolve(data);
+        } else {
+            dbs.dbs.collection(query.collectionName).find(query.query, {}).toArray((err, docs: Document[] = []) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    data[query.collectionName] = docs || [];
+                    resolve(data);
+                }
+            });
+        }
     });
 }
 

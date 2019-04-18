@@ -29,14 +29,14 @@ var Index = /** @class */ (function (_super) {
             React.createElement("div", { className: "page-wrap portfolio" },
                 React.createElement("form", { action: "/api/remove-project", method: "POST" },
                     React.createElement("div", { className: "projects" }, this.state.portfolios.map(function (project, ind) {
-                        return (React.createElement("div", { key: "" + project._id, className: "project" },
+                        return (React.createElement("div", { key: "" + project.projectPK, className: "project" },
                             React.createElement("a", { href: "" + project.projectURL },
                                 React.createElement("div", { className: "image" },
                                     React.createElement("img", { src: project.imageURL, alt: "" + project.description })),
                                 React.createElement("div", { className: "info" },
                                     React.createElement("div", { className: "project-name" },
                                         React.createElement("span", null, project.name)))),
-                            React.createElement("input", { type: "checkbox", name: "_id", id: "", value: project._id.toHexString() })));
+                            React.createElement("input", { type: "checkbox", name: "projectPK", value: project.projectPK })));
                     })),
                     React.createElement("button", null, "Remove Selected")),
                 React.createElement("form", { className: "add-project-form", action: "/api/add-project", method: "POST" },

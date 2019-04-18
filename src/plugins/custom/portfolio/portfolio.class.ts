@@ -32,7 +32,8 @@ export class ToolCategory {
 }
 
 export class Project {
-    _id?: Types.ObjectId;
+    // _id?: Types.ObjectId;
+    projectPK: string;
     name: string;
     description: string;
     projectURL: string;
@@ -42,8 +43,8 @@ export class Project {
     updatedAt?: Date;
     __v?: number;
 
-    constructor(id: Types.ObjectId, name: string, url: string, description: string = "") {
-        this._id = id;
+    constructor(projectPK: string, name: string, url: string, description: string = "") {
+        this.projectPK =
         this.name = name;
         this.description = description;
         this.projectURL = url;
@@ -52,6 +53,7 @@ export class Project {
 }
 
 const ProjectSchema: Schema = new Schema({
+    projectPK: { type: String, required: true },
     name: { type: String, required: true },
     description: { type: String, required: true },
     projectURL: { type: String, required: true },

@@ -46,7 +46,7 @@ function aggregateAllPluginData(dbs, store, options, callback) {
                     query: {}
                 })
                     .then(function (docs) {
-                    data[collectionName] = docs;
+                    data[collectionName] = docs[collectionName];
                     dataCollected++;
                     if (dataCollected == plugin.databaseCollections.length)
                         itter1();
@@ -65,18 +65,22 @@ exports.aggregateAllPluginData = aggregateAllPluginData;
 function queryOneCollection(dbs, query) {
     return new Promise(function (resolve, reject) {
         var data = {};
-        if (!query)
-            return resolve(data);
-        dbs.dbs.collection(query.collectionName).find(query.query, {}).toArray(function (err, docs) {
-            if (docs === void 0) { docs = []; }
-            if (err) {
-                reject(err);
-            }
-            else {
-                data[query.collectionName] = docs || [];
-                resolve(data);
-            }
-        });
+        if (!query) {
+            // No query?! YOU GET NOTHING! YOU LOSE! GOOD DAY, SIR!
+            resolve(data);
+        }
+        else {
+            dbs.dbs.collection(query.collectionName).find(query.query, {}).toArray(function (err, docs) {
+                if (docs === void 0) { docs = []; }
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    data[query.collectionName] = docs || [];
+                    resolve(data);
+                }
+            });
+        }
     });
 }
 exports.queryOneCollection = queryOneCollection;

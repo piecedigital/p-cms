@@ -19,11 +19,11 @@ var ToolCategory = /** @class */ (function () {
 }());
 exports.ToolCategory = ToolCategory;
 var Project = /** @class */ (function () {
-    function Project(id, name, url, description) {
+    function Project(projectPK, name, url, description) {
         if (description === void 0) { description = ""; }
         this.imageURL = "/public/media/images/cat-dog.jpg";
-        this._id = id;
-        this.name = name;
+        this.projectPK =
+            this.name = name;
         this.description = description;
         this.projectURL = url;
         this.tools = [];
@@ -32,6 +32,7 @@ var Project = /** @class */ (function () {
 }());
 exports.Project = Project;
 var ProjectSchema = new mongoose_1.Schema({
+    projectPK: { type: String, required: true },
     name: { type: String, required: true },
     description: { type: String, required: true },
     projectURL: { type: String, required: true },
