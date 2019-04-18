@@ -93,7 +93,7 @@ export function queryOneCollection(dbs: Database, query: CollectionQuery) {
             if (err) {
                 reject(err);
             } else {
-                data.collectionName = docs || [];
+                data[query.collectionName] = docs || [];
                 resolve(data);
             }
         });
@@ -104,12 +104,12 @@ export function queryManyCollections(dbs: Database, queryList: CollectionQuery[]
     return new Promise<Record<string, Document[]>>((resolve, reject) => {
         let data: Record<string, Document[]> = {};
 
-        queryList.map(({collectionName, query = {}}, ind) => {
-            dbs.dbs.collection(collectionName).find(query, {}).toArray((err, docs: Document[] = []) => {
-                data[collectionName] = docs || [];
-
+        queryList.map((query, ind) => {
+            queryOneCollection(dbs, query)
+            .then(data => {
                 if (ind === queryList.length-1) resolve(data);
-            });
+            })
+            .catch(e => console.error(e));
         });
     });
 }

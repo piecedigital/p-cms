@@ -41,9 +41,9 @@ function getView(url, options) {
         }
         else {
             var source_1 = layout_1.HandlebarsHandler(url, options);
-            console.log(source_1);
             helpers_1.queryManyCollections(options.database, source_1.query)
                 .then(function (dbData) {
+                console.log(dbData);
                 var template = handlebars.compile(source_1.page);
                 result = template(Object.assign(options.data || {}, source_1.params, dbData));
                 resolve(result);

@@ -73,7 +73,7 @@ function queryOneCollection(dbs, query) {
                 reject(err);
             }
             else {
-                data.collectionName = docs || [];
+                data[query.collectionName] = docs || [];
                 resolve(data);
             }
         });
@@ -83,14 +83,13 @@ exports.queryOneCollection = queryOneCollection;
 function queryManyCollections(dbs, queryList) {
     return new Promise(function (resolve, reject) {
         var data = {};
-        queryList.map(function (_a, ind) {
-            var collectionName = _a.collectionName, _b = _a.query, query = _b === void 0 ? {} : _b;
-            dbs.dbs.collection(collectionName).find(query, {}).toArray(function (err, docs) {
-                if (docs === void 0) { docs = []; }
-                data[collectionName] = docs || [];
+        queryList.map(function (query, ind) {
+            queryOneCollection(dbs, query)
+                .then(function (data) {
                 if (ind === queryList.length - 1)
                     resolve(data);
-            });
+            })
+                .catch(function (e) { return console.error(e); });
         });
     });
 }

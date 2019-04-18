@@ -43,10 +43,11 @@ export function getView(url: string, options: renderOptions): Promise<string> {
             )}`;
         } else {
             const source = HandlebarsHandler(url, options);
-console.log(source);
 
             queryManyCollections(options.database, source.query)
                 .then((dbData) => {
+                    console.log(dbData);
+
                     const template = handlebars.compile(source.page);
                     result = template(Object.assign(options.data || {}, source.params, dbData));
 
