@@ -21,8 +21,6 @@ app.get("/", function (req, res) {
     // });
 });
 app.get("/*", function (req, res) {
-    // TODO: move aggregation to render
-    // aggregateAllPluginData(dbs, store, null, (data) => {
     render_1.getView(up(req.url), {
         title: "Home",
         // data,
@@ -32,7 +30,6 @@ app.get("/*", function (req, res) {
         res.send(result);
     })
         .catch(function (e) { return console.error(e); });
-    // });
 });
 function default_1(db, str) {
     dbs = db;

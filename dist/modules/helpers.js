@@ -31,7 +31,7 @@ function aggregateAllPluginData(dbs, store, options, callback) {
         // get collection documents for a given plugin
         function itter2(plugin) {
             console.log("getting plugin database data");
-            if (plugin.databaseCollections.length == 0) {
+            if (plugin.databaseCollections.length === 0) {
                 itter1();
             }
             var dataCollected = 0;
@@ -62,6 +62,25 @@ function aggregateAllPluginData(dbs, store, options, callback) {
         .catch(function (e) { return console.error(e); });
 }
 exports.aggregateAllPluginData = aggregateAllPluginData;
+function queryManyCollections(dbs, queryList) {
+    return new Promise(function (resolve, reject) {
+        var data = {};
+        if (!(queryList.length > 0)) {
+            resolve(data);
+        }
+        else {
+            queryList.map(function (query, ind) {
+                queryOneCollection(dbs, query)
+                    .then(function (data) {
+                    if (ind === queryList.length - 1)
+                        resolve(data);
+                })
+                    .catch(function (e) { return console.error(e); });
+            });
+        }
+    });
+}
+exports.queryManyCollections = queryManyCollections;
 function queryOneCollection(dbs, query) {
     return new Promise(function (resolve, reject) {
         var data = {};
@@ -84,20 +103,6 @@ function queryOneCollection(dbs, query) {
     });
 }
 exports.queryOneCollection = queryOneCollection;
-function queryManyCollections(dbs, queryList) {
-    return new Promise(function (resolve, reject) {
-        var data = {};
-        queryList.map(function (query, ind) {
-            queryOneCollection(dbs, query)
-                .then(function (data) {
-                if (ind === queryList.length - 1)
-                    resolve(data);
-            })
-                .catch(function (e) { return console.error(e); });
-        });
-    });
-}
-exports.queryManyCollections = queryManyCollections;
 function urlPrefixer(prefix) {
     return function (url) {
         return "" + prefix + url;
@@ -157,13 +162,13 @@ exports.regexURL = regexURL;
 function pickPage(url, routes) {
     var arr = Object.keys(routes);
     var params = {};
-    var query = [];
+    var queryList = [];
     var page = "";
     var i = 0;
     while (!page && i < arr.length) {
         var routeString = arr[i];
         params = routes[routeString].params || {};
-        query = routes[routeString].query || [];
+        queryList = routes[routeString].query || [];
         var x = regexURL(routeString);
         var xx = new RegExp(x.regexURL);
         var match = url.match(xx);
@@ -187,7 +192,7 @@ function pickPage(url, routes) {
     return {
         page: page,
         params: params,
-        query: query
+        queryList: queryList
     };
 }
 exports.pickPage = pickPage;

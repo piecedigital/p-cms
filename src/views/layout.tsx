@@ -75,10 +75,12 @@ export const HandlebarsHandler = function (url: string, options: renderOptions) 
         theme = require(`../themes/${process.env["THEME"]}/index`).default
     } catch (error) {
         // console.error(error);
-        try {
-            theme = require(`../themes/example/index`).default
-        } catch (error) {
-            // console.error(error);
+        theme = (url: string) => {
+            return {
+                params: {},
+                page: "500: Theme configuration defunct",
+                queryList: []
+            } as PageResults
         }
     }
 

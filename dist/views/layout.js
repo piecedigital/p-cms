@@ -83,12 +83,13 @@ exports.HandlebarsHandler = function (url, options) {
     }
     catch (error) {
         // console.error(error);
-        try {
-            theme = require("../themes/example/index").default;
-        }
-        catch (error) {
-            // console.error(error);
-        }
+        theme = function (url) {
+            return {
+                params: {},
+                page: "500: Theme configuration defunct",
+                queryList: []
+            };
+        };
     }
     return theme(url);
 };

@@ -11,7 +11,7 @@ export interface AggrOptions {
 
 export interface CollectionQuery {
     collectionName: string;
-    query: Record<string, any>;
+    query: Record<string, string>;
 }
 
 // gets every plugin and its database data
@@ -50,7 +50,7 @@ export function aggregateAllPluginData(dbs: Database, store: Store, options: Agg
         // get collection documents for a given plugin
         function itter2(plugin: Plugin) {
             console.log("getting plugin database data");
-            if(plugin.databaseCollections.length == 0) {
+            if(plugin.databaseCollections.length === 0) {
                 itter1();
             }
 
@@ -83,6 +83,24 @@ export function aggregateAllPluginData(dbs: Database, store: Store, options: Agg
     .catch(e => console.error(e));
 }
 
+export function queryManyCollections(dbs: Database, queryList: CollectionQuery[]) {
+    return new Promise<Record<string, Document[]>>((resolve, reject) => {
+        let data: Record<string, Document[]> = {};
+
+        if (!(queryList.length > 0)) {
+            resolve(data);
+        } else {
+            queryList.map((query, ind) => {
+                queryOneCollection(dbs, query)
+                    .then(data => {
+                        if (ind === queryList.length - 1) resolve(data);
+                    })
+                    .catch(e => console.error(e));
+            });
+        }
+    });
+}
+
 export function queryOneCollection(dbs: Database, query: CollectionQuery) {
     return new Promise<Record<string, Document[]>>((resolve, reject) => {
         let data: Record<string, Document[]> = {};
@@ -100,20 +118,6 @@ export function queryOneCollection(dbs: Database, query: CollectionQuery) {
                 }
             });
         }
-    });
-}
-
-export function queryManyCollections(dbs: Database, queryList: CollectionQuery[] ) {
-    return new Promise<Record<string, Document[]>>((resolve, reject) => {
-        let data: Record<string, Document[]> = {};
-
-        queryList.map((query, ind) => {
-            queryOneCollection(dbs, query)
-            .then(data => {
-                if (ind === queryList.length-1) resolve(data);
-            })
-            .catch(e => console.error(e));
-        });
     });
 }
 
@@ -212,19 +216,19 @@ export interface Route {
 export interface PageResults {
     page: string;
     params: Record<string, any>;
-    query: CollectionQuery[];
+    queryList: CollectionQuery[];
 }
 
 export function pickPage(url: string, routes: Record<string, Route>): PageResults {
     const arr = Object.keys(routes);
     let params: Record<string, any> = {};
-    let query: CollectionQuery[] = [];
+    let queryList: CollectionQuery[] = [];
     let page: string = "";
     let i = 0;
     while (!page && i < arr.length) {
         const routeString = arr[i];
         params = routes[routeString].params || {};
-        query = routes[routeString].query || [];
+        queryList = routes[routeString].query || [];
         const x = regexURL(routeString);
         const xx = new RegExp(x.regexURL);
         const match = url.match(xx);
@@ -250,6 +254,6 @@ export function pickPage(url: string, routes: Record<string, Route>): PageResult
     return {
         page,
         params,
-        query
+        queryList
     };
 }

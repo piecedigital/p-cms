@@ -25,7 +25,7 @@ export default function(url: string): PageResults {
         };
 
         data.params = routeData.params || {};
-        data.query = routeData.query || [];
+        data.query = routeData.queryList || [];
         data.page = (params: Record<string, any> = null) => {
             return readFileSync(join(__dirname, "pages", routeData.page)).toString()
         }

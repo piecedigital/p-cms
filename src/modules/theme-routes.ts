@@ -26,18 +26,15 @@ app.get("/", (req, res) => {
 });
 
 app.get("/*", (req, res) => {
-    // TODO: move aggregation to render
-    // aggregateAllPluginData(dbs, store, null, (data) => {
-        getView(up(req.url), {
-                title: "Home",
-                // data,
-                database: dbs
-            })
-            .then((result: string) => {
-                res.send(result);
-            })
-            .catch(e => console.error(e));
-    // });
+    getView(up(req.url), {
+            title: "Home",
+            // data,
+            database: dbs
+        })
+        .then((result: string) => {
+            res.send(result);
+        })
+        .catch(e => console.error(e));
 });
 
 export default function(db, str) {

@@ -9,7 +9,7 @@ import { $404 } from "../views/404";
 import { InternalError } from "../views/internal-error";
 import { AdminDashboard, AdminLogin } from "../views/admin";
 import Database from "./database";
-import { queryOneCollection, queryManyCollections } from "./helpers";
+import { queryOneCollection, queryManyCollections, regexURL } from "./helpers";
 
 const context = {};
 
@@ -46,9 +46,27 @@ export function getView(url: string, options: renderOptions): Promise<string> {
         } else {
             const source = HandlebarsHandler(url, options);
 
-            queryManyCollections(options.database, source.query)
+            // got through each query and swap parameter markers
+            source.queryList.map((queryObject, index) => {
+                Object.keys(queryObject.query)
+                    .map(queryKey => {
+                        const queryData = queryObject.query[queryKey];
+
+                        const regexMatcher = /{:(.+)}/;
+                        const match = queryData.match(regexMatcher);
+
+                        const param = Object.keys(regexURL(queryData).params).pop();
+
+                        if (match) {
+                            // swap
+                            source.queryList[index].query[queryKey] = source.params[param];
+                        }
+                    });
+            });
+
+            queryManyCollections(options.database, source.queryList)
                 .then((dbData) => {
-                    console.log(dbData);
+                    // console.log(dbData);
 
                     const template = handlebars.compile(source.page);
                     result = template(Object.assign(options.data || {}, source.params, dbData));

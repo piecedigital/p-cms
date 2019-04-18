@@ -6,11 +6,39 @@
     <div class="page-wrap">
         <header>
             <h1>
-                Foobar Web Page {{id}}
+                {{#if portfolios.[0]}}
+                    Project: {{portfolios.[0].name}}
+                {{else}}
+                    Foobar
+                {{/if}}
             </h1>
         </header>
     </div>
 </section>
+{{#if portfolios}}
+    <section>
+        <div class="section-separator">
+            <div class="triangle"></div>
+        </div>
+        <div class="page-wrap">
+            <div class="title">
+                Projects
+            </div>
+            <div class="separator"></div>
+            <div class="image-cta">
+                {{#each portfolios}}
+                    <div key={{name}}-{{ind}} class="img">
+                        <a href={{projectURL}}>
+                            <img src={{imageURL}} alt="project name: {{name}}" />
+                            <div class="separator"></div>
+                            <div>{{name}}</div>
+                        </a>
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+    </section>
+{{/if}}
 <section class="footer">
     <div class="section-separator">
         <div class="triangle"></div>

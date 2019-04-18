@@ -42,9 +42,23 @@ function getView(url, options) {
         }
         else {
             var source_1 = layout_1.HandlebarsHandler(url, options);
-            helpers_1.queryManyCollections(options.database, source_1.query)
+            // got through each query and swap parameter markers
+            source_1.queryList.map(function (queryObject, index) {
+                Object.keys(queryObject.query)
+                    .map(function (queryKey) {
+                    var queryData = queryObject.query[queryKey];
+                    var regexMatcher = /{:(.+)}/;
+                    var match = queryData.match(regexMatcher);
+                    var param = Object.keys(helpers_1.regexURL(queryData).params).pop();
+                    if (match) {
+                        // swap
+                        source_1.queryList[index].query[queryKey] = source_1.params[param];
+                    }
+                });
+            });
+            helpers_1.queryManyCollections(options.database, source_1.queryList)
                 .then(function (dbData) {
-                console.log(dbData);
+                // console.log(dbData);
                 var template = handlebars.compile(source_1.page);
                 result = template(Object.assign(options.data || {}, source_1.params, dbData));
                 resolve(result);

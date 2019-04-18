@@ -24,7 +24,7 @@ function default_1(url) {
             query: []
         };
         data.params = routeData.params || {};
-        data.query = routeData.query || [];
+        data.query = routeData.queryList || [];
         data.page = function (params) {
             if (params === void 0) { params = null; }
             return fs_1.readFileSync(path_1.join(__dirname, "pages", routeData.page)).toString();

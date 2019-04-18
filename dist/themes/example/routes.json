@@ -1,11 +1,11 @@
 {
     "/foobar/{:id}": {
         "page": "foobar.handlebars",
-        "query": [
+        "queryList": [
             {
                 "collectionName": "portfolios",
                 "query": {
-                    "projectPK": "9c8cee60-61fe-11e9-b3ed-15bcaf8bd110"
+                    "projectPK": "{:id}"
                 }
             }
         ]
@@ -21,7 +21,7 @@
             "title": "Home sweet home"
         },
         "page": "home.handlebars",
-        "query": [{
+        "queryList": [{
             "collectionName": "portfolios",
             "query": {}
         }]
