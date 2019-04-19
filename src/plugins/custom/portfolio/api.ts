@@ -10,7 +10,6 @@ import Store from "../../../modules/store";
 import { Project, ProjectModel } from "./portfolio.class";
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
-import { generatedDatabaseDates } from "../../../modules/helpers";
 import * as uuid from "uuid/v1";
 
 const app = express();

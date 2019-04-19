@@ -28,18 +28,23 @@ var Index = /** @class */ (function (_super) {
         return ([
             React.createElement("div", { className: "page-wrap portfolio" },
                 React.createElement("form", { action: "/api/remove-project", method: "POST" },
+                    React.createElement("h2", null, "List of Projects"),
                     React.createElement("div", { className: "projects" }, this.state.portfolios.map(function (project, ind) {
-                        return (React.createElement("div", { key: "" + project.projectPK, className: "project" },
-                            React.createElement("a", { href: "" + project.projectURL },
-                                React.createElement("div", { className: "image" },
-                                    React.createElement("img", { src: project.imageURL, alt: "" + project.description })),
-                                React.createElement("div", { className: "info" },
-                                    React.createElement("div", { className: "project-name" },
-                                        React.createElement("span", null, project.name)))),
-                            React.createElement("input", { type: "checkbox", name: "projectPK", value: project.projectPK })));
+                        return ([
+                            React.createElement("input", { key: project.projectPK + "-input", id: project.projectPK + "-input", type: "checkbox", name: "projectPK", value: project.projectPK }),
+                            React.createElement("div", { key: "" + project.projectPK, className: "project" },
+                                React.createElement("label", { htmlFor: project.projectPK + "-input" },
+                                    React.createElement("div", { className: "image" },
+                                        React.createElement("img", { src: project.imageURL, alt: "" + project.description })),
+                                    React.createElement("div", { className: "info" },
+                                        React.createElement("div", { className: "project-name" },
+                                            React.createElement("span", null, project.name)))))
+                        ]);
                     })),
                     React.createElement("button", null, "Remove Selected")),
+                React.createElement("hr", { className: "separator" }),
                 React.createElement("form", { className: "add-project-form", action: "/api/add-project", method: "POST" },
+                    React.createElement("h2", null, "Add New Project"),
                     React.createElement("div", null,
                         React.createElement("label", { htmlFor: "" }, "Project Name"),
                         React.createElement("br", null),

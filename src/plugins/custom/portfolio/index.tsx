@@ -19,12 +19,14 @@ export default class Index extends React.Component {
         return ([
             <div className="page-wrap portfolio">
                 <form action="/api/remove-project" method="POST">
+                    <h2>List of Projects</h2>
                     <div className="projects">
                         {
                             this.state.portfolios.map((project: Project, ind) => {
-                                return (
+                                return ([
+                                    <input key={`${project.projectPK}-input`} id={`${project.projectPK}-input`} type="checkbox" name="projectPK" value={project.projectPK}/>,
                                     <div key={`${project.projectPK}`} className="project">
-                                        <a href={`${project.projectURL}`}>
+                                        <label htmlFor={`${project.projectPK}-input`}>
                                             <div className="image">
                                                 <img src={project.imageURL} alt={`${project.description}`} />
                                             </div>
@@ -33,16 +35,17 @@ export default class Index extends React.Component {
                                                     <span>{project.name}</span>
                                                 </div>
                                             </div>
-                                        </a>
-                                        <input type="checkbox" name="projectPK" value={project.projectPK}/>
+                                        </label>
                                     </div>
-                                );
+                                ]);
                             })
                         }
                     </div>
                     <button>Remove Selected</button>
                 </form>
+                <hr className="separator"></hr>
                 <form className="add-project-form" action="/api/add-project" method="POST">
+                    <h2>Add New Project</h2>
                     <div>
                         <label htmlFor="">Project Name</label><br/>
                         <input type="text" name="name"/>

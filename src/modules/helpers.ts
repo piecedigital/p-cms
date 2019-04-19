@@ -14,6 +14,45 @@ export interface CollectionQuery {
     query: Record<string, string>;
 }
 
+
+export interface regexURLreturn {
+    regexURL?: RegExp;
+    params?: Record<string, any>;
+}
+
+export interface Route {
+    page: () => string;
+    params?: Record<string, any>,
+    query: CollectionQuery[],
+}
+
+export interface PageResults {
+    page: string;
+    params: Record<string, any>;
+    queryList: CollectionQuery[];
+}
+
+export interface ThemeRegister {
+    name: string;
+    description?: string,
+    dateCreated?: string,
+    author?: string,
+    company?: string,
+    image?: string
+}
+
+export interface loadedThemeData {
+    tr: ThemeRegister,
+    component: any,
+    directory: string
+}
+
+export interface loadedPluginData {
+    pr: PluginRegister,
+    component: any,
+    directory: string
+}
+
 // gets every plugin and its database data
 export function aggregateAllPluginData(dbs: Database, store: Store, options: AggrOptions = {}, callback: (data: any) => void) {
     new Promise((res, rej) => {
@@ -127,12 +166,6 @@ export function urlPrefixer(prefix: string): (url: string) => string {
     }
 }
 
-export interface loadedPluginData {
-    pr: PluginRegister,
-    component: any,
-    directory: string
-}
-
 export function getPlugins(pluginType: string = "standard", callback: (data: any) => void) {
     readdirSync(join(__dirname, `../plugins/${pluginType}`))
     .map((folder: string) => {
@@ -143,21 +176,6 @@ export function getPlugins(pluginType: string = "standard", callback: (data: any
     .map((data: loadedPluginData) => {
         callback(data);
     });
-}
-
-export interface ThemeRegister {
-    name: string;
-    description?: string,
-    dateCreated?: string,
-    author?: string,
-    company?: string,
-    image?: string
-}
-
-export interface loadedThemeData {
-    tr: ThemeRegister,
-    component: any,
-    directory: string
 }
 
 export function getThemes(): loadedThemeData[] {
@@ -173,22 +191,6 @@ export function getThemes(): loadedThemeData[] {
             return null;
         }
     }).filter(x => !!x); //filters out null values
-}
-
-export function generatedDatabaseDates(): {
-    createdAt: number,
-    updatedAt: number
-} {
-    const d = Date.now();
-    return {
-        createdAt: d,
-        updatedAt: d,
-    }
-}
-
-export interface regexURLreturn {
-    regexURL?: RegExp;
-    params?: Record<string, any>;
 }
 
 export function regexURL(url: string) {
@@ -207,16 +209,51 @@ export function regexURL(url: string) {
     return x;
 }
 
-export interface Route {
-    page: (params: Record<string, any>) => string;
-    params?: Record<string, any>,
-    query: CollectionQuery[],
-}
+export function getThemeContent(url: string) {
+    let header: string = "";
+    let footer: string = "";
+    let json: Record<string, any> = {};
 
-export interface PageResults {
-    page: string;
-    params: Record<string, any>;
-    queryList: CollectionQuery[];
+    const themeRoot = join(__dirname, `../themes/${process.env["THEME"]}`);
+
+    try {
+        header = readFileSync(`${themeRoot}/partials/header.handlebars`).toString();
+        footer = readFileSync(`${themeRoot}/partials/footer.handlebars`).toString();
+        json = JSON.parse(readFileSync( `${themeRoot}/routes.json`).toString());
+    } catch (error) {
+        console.error(`Theme requires 3 files: "partials/header.handlebars", "partials/footer.handlebars", and "routes.json"`);
+        console.error(error.message);
+        return {
+            params: {},
+            queryList: [],
+            page: "<center><h1>Critical error getting page content</h1></center>"
+        }
+    }
+
+    let routes: Record<string, Route> = {};
+
+    Object.keys(json).map(routeKey => {
+        const routeData = json[routeKey];
+        let data: Route = {
+            params: {},
+            page: null,
+            query: []
+        };
+
+        data.params = routeData.params || {};
+        data.query = routeData.queryList || [];
+        data.page = () => {
+            return readFileSync(`${themeRoot}/pages/${routeData.page}`).toString()
+        }
+
+        routes[routeKey] = data;
+    });
+
+    // url match
+    const results = pickPage(url, routes);
+    results.page = header + results.page + footer;
+
+    return results
 }
 
 export function pickPage(url: string, routes: Record<string, Route>): PageResults {
@@ -241,7 +278,7 @@ export function pickPage(url: string, routes: Record<string, Route>): PageResult
                     params[paramList[i]] = x;
                 }
             });
-            page = routes[routeString].page(params);
+            page = routes[routeString].page();
             break;
         }
         i++;
@@ -249,7 +286,7 @@ export function pickPage(url: string, routes: Record<string, Route>): PageResult
 
     if(!page) {
         const routeString = "404";
-        page = routes[routeString].page(params);
+        page = routes[routeString].page();
     }
     return {
         page,

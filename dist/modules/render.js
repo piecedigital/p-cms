@@ -41,9 +41,11 @@ function getView(url, options) {
             resolve(result);
         }
         else {
-            var source_1 = layout_1.HandlebarsHandler(url, options);
+            var source_1 = layout_1.HandlebarsHandler(url);
             // got through each query and swap parameter markers
             source_1.queryList.map(function (queryObject, index) {
+                if (!queryObject.query)
+                    return;
                 Object.keys(queryObject.query)
                     .map(function (queryKey) {
                     var queryData = queryObject.query[queryKey];

@@ -6,7 +6,6 @@ import Store from "./store";
 import { Project } from "../plugins/custom/portfolio/portfolio.class";
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
-import { generatedDatabaseDates } from "./helpers";
 
 const app = express();
 let dbs: Database = null;

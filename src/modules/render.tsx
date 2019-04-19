@@ -44,10 +44,12 @@ export function getView(url: string, options: renderOptions): Promise<string> {
 
             resolve(result);
         } else {
-            const source = HandlebarsHandler(url, options);
+            const source = HandlebarsHandler(url);
 
             // got through each query and swap parameter markers
             source.queryList.map((queryObject, index) => {
+                if(!queryObject.query) return;
+
                 Object.keys(queryObject.query)
                     .map(queryKey => {
                         const queryData = queryObject.query[queryKey];

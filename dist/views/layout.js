@@ -30,6 +30,7 @@ var react_router_1 = require("react-router");
 var _404_1 = require("../views/404");
 var internal_error_1 = require("../views/internal-error");
 var admin_1 = require("../views/admin");
+var helpers_1 = require("../modules/helpers");
 var views = {
     "admin": admin_1.AdminDashboard,
     "adminLogin": admin_1.AdminLogin,
@@ -76,20 +77,20 @@ var ReactHandler = /** @class */ (function (_super) {
     return ReactHandler;
 }(React.Component));
 exports.ReactHandler = ReactHandler;
-exports.HandlebarsHandler = function (url, options) {
-    var theme = null;
-    try {
-        theme = require("../themes/" + process.env["THEME"] + "/index").default;
-    }
-    catch (error) {
-        // console.error(error);
-        theme = function (url) {
-            return {
-                params: {},
-                page: "500: Theme configuration defunct",
-                queryList: []
-            };
-        };
-    }
-    return theme(url);
+exports.HandlebarsHandler = function (url) {
+    // let theme: (url: string) => PageResults = null;
+    // try {
+    //     theme = require(`../themes/${process.env["THEME"]}/index`).default
+    // } catch (error) {
+    //     // console.error(error);
+    //     theme = (url: string) => {
+    //         return {
+    //             params: {},
+    //             page: "500: Theme configuration defunct",
+    //             queryList: []
+    //         } as PageResults
+    //     }
+    // }
+    // return theme(url);
+    return helpers_1.getThemeContent(url);
 };

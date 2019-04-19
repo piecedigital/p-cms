@@ -137,14 +137,6 @@ function getThemes() {
     }).filter(function (x) { return !!x; }); //filters out null values
 }
 exports.getThemes = getThemes;
-function generatedDatabaseDates() {
-    var d = Date.now();
-    return {
-        createdAt: d,
-        updatedAt: d,
-    };
-}
-exports.generatedDatabaseDates = generatedDatabaseDates;
 function regexURL(url) {
     var x = {
         params: {}
@@ -159,6 +151,46 @@ function regexURL(url) {
     return x;
 }
 exports.regexURL = regexURL;
+function getThemeContent(url) {
+    var header = "";
+    var footer = "";
+    var json = {};
+    var themeRoot = path_1.join(__dirname, "../themes/" + process.env["THEME"]);
+    try {
+        header = fs_1.readFileSync(themeRoot + "/partials/header.handlebars").toString();
+        footer = fs_1.readFileSync(themeRoot + "/partials/footer.handlebars").toString();
+        json = JSON.parse(fs_1.readFileSync(themeRoot + "/routes.json").toString());
+    }
+    catch (error) {
+        console.error("Theme requires 3 files: \"partials/header.handlebars\", \"partials/footer.handlebars\", and \"routes.json\"");
+        console.error(error.message);
+        return {
+            params: {},
+            queryList: [],
+            page: "<center><h1>Critical error getting page content</h1></center>"
+        };
+    }
+    var routes = {};
+    Object.keys(json).map(function (routeKey) {
+        var routeData = json[routeKey];
+        var data = {
+            params: {},
+            page: null,
+            query: []
+        };
+        data.params = routeData.params || {};
+        data.query = routeData.queryList || [];
+        data.page = function () {
+            return fs_1.readFileSync(themeRoot + "/pages/" + routeData.page).toString();
+        };
+        routes[routeKey] = data;
+    });
+    // url match
+    var results = pickPage(url, routes);
+    results.page = header + results.page + footer;
+    return results;
+}
+exports.getThemeContent = getThemeContent;
 function pickPage(url, routes) {
     var arr = Object.keys(routes);
     var params = {};
@@ -180,14 +212,14 @@ function pickPage(url, routes) {
                     params[paramList[i]] = x;
                 }
             });
-            page = routes[routeString].page(params);
+            page = routes[routeString].page();
             break;
         }
         i++;
     }
     if (!page) {
         var routeString = "404";
-        page = routes[routeString].page(params);
+        page = routes[routeString].page();
     }
     return {
         page: page,
