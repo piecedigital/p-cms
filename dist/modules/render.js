@@ -15,22 +15,16 @@ var React = require("react");
 var server_1 = require("react-dom/server");
 var react_router_1 = require("react-router");
 var handlebars = require("handlebars");
-// import views
+var filter = require("handlebars.filter");
 var layout_1 = require("../views/layout");
-// import { Home } from "../views/home";
-var _404_1 = require("../views/404");
-var internal_error_1 = require("../views/internal-error");
-var admin_1 = require("../views/admin");
 var helpers_1 = require("./helpers");
+// filter.registerFilter("foobar", function (data, other) {
+//     const res = (data);
+//     console.log(data, res, other);
+//     return res;
+// });
+filter.registerHelper(handlebars);
 var context = {};
-var views = {
-    // "index": Home,
-    // "home": Home,
-    "admin": admin_1.AdminDashboard,
-    "adminLogin": admin_1.AdminLogin,
-    "404": _404_1.$404,
-    "internalError": internal_error_1.InternalError,
-};
 function getView(url, options) {
     return new Promise(function (resolve, reject) {
         var result = "";

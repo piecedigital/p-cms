@@ -4,7 +4,6 @@ cp.fork("./dist/app.js", [], {
         DB_NAME: "pds-cms",
         DB_USER: "darryl",
         DB_PASS: "password",
-        DB_AUTH: "admin",
         DB_PORT: 27017,
         THEME: "example"
     }

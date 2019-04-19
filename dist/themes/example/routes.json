@@ -1,6 +1,6 @@
 {
-    "/foobar/{:id}": {
-        "page": "foobar.handlebars",
+    "/project/{:id}": {
+        "page": "project.handlebars",
         "queryList": [
             {
                 "collectionName": "portfolios",
@@ -9,12 +9,6 @@
                 }
             }
         ]
-    },
-    "/foobar": {
-        "params": {
-            "title": "FUBAR"
-        },
-        "page": "foobar.handlebars"
     },
     "/$": {
         "params": {
