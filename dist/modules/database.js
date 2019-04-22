@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var bcrypt = require("bcryptjs");
 var mongoose_1 = require("mongoose");
 var fs_1 = require("fs");
 var path_1 = require("path");
@@ -22,27 +21,6 @@ var Database = /** @class */ (function () {
             }
         });
     }
-    Database.prototype.setupFirstAdminUser = function () {
-        var _this = this;
-        this.AdminUserModel.findOne({}, function (err, res) {
-            console.log("looking for admin user");
-            if (!res) {
-                console.log("no admin user");
-                var newAdminUser = new _this.AdminUserModel({
-                    _id: new mongoose_1.Types.ObjectId(),
-                    name: "admin",
-                    password: bcrypt.hashSync("password", bcrypt.genSaltSync())
-                });
-                newAdminUser.save(function (err) {
-                    if (err)
-                        return console.error(err);
-                    console.log("created admin user");
-                });
-                return;
-            }
-            console.log("found admin user");
-        });
-    };
     Database.prototype.connect = function (DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME) {
         var _this = this;
         var url = "mongodb://" + DB_USER + ":" + DB_PASS + "@" + (DB_HOST || "localhost") + ":" + (DB_PORT || 27017) + "/" + DB_NAME;
@@ -82,6 +60,7 @@ var Database = /** @class */ (function () {
     return Database;
 }());
 var UserSchema = new mongoose_1.Schema({
+    displayName: { type: String, required: true },
     name: { type: String, required: true },
     password: { type: String, required: true },
 }, { timestamps: true });

@@ -54,6 +54,7 @@ export class AdminDashboard extends React.Component {
                 <section className="main-content">
                     <Switch>
                         <Route path="/pc_admin/login" render={(props) => <AdminLogin {...props} {...this.props} />} />
+                        <Route path="/pc_admin/signup" render={(props) => <AdminSignup {...props} {...this.props} />} />
                         <Route path="/pc_admin/db-setup" render={(props) => <AdminDBSetup {...props} {...this.props} />} />
                         {
                             this.state.adminViews.map(view => {
@@ -112,7 +113,7 @@ export class AdminLogin extends React.Component {
                 <div className="page-wrap">
                     <header>
                         <h1>
-                            Administration
+                            Login
                         </h1>
                     </header>
                     <form action="/pc_admin/login" method="POST">
@@ -127,6 +128,54 @@ export class AdminLogin extends React.Component {
                         </div>
                         <div>
                             <button type="submit">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        ]);
+    }
+
+}
+
+export class AdminSignup extends React.Component {
+    state: {};
+    props: {
+        csrfToken?: string
+    } | any;
+
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return ([
+            <section className="header">
+                <div className="page-wrap">
+                    <header>
+                        <h1>
+                            Signup
+                        </h1>
+                    </header>
+                    <form action="/pc_admin/signup" method="POST">
+                        <input type="hidden" name="_csrf" value={this.props.csrfToken} />
+                        <div>
+                            <label htmlFor="">Your Name:</label><br />
+                            <input type="text" name="displayName" />
+                        </div>
+                        <div>
+                            <label htmlFor="">Username:</label><br />
+                            <input type="text" name="username" />
+                        </div>
+                        <div>
+                            <label htmlFor="">Password:</label><br />
+                            <input type="password" name="password" />
+                        </div>
+                        <div>
+                            <label htmlFor="">Password:</label><br />
+                            <input type="password" name="passwordConfirm" />
+                        </div>
+                        <div>
+                            <button type="submit">Signup</button>
                         </div>
                     </form>
                 </div>
@@ -182,5 +231,4 @@ export class AdminDBSetup extends React.Component {
             </section>
         ]);
     }
-
 }

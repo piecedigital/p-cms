@@ -1,6 +1,8 @@
 import * as express from "express";
 import * as csrf from "csurf";
 import { Types } from "mongoose";
+import * as bcrypt from "bcryptjs";
+import { User } from "./user.class";
 import { getView } from "./render";
 import { authorize, authenticate, deauthenticate } from "./auth";
 import Database from "./database";
@@ -105,6 +107,23 @@ app.get("/login", csrfProtection, (req, res) => {
     });
 });
 
+app.get("/signup", csrfProtection, (req, res) => {
+    authorize(req, dbs, () => {
+        res.redirect("/pc_admin");
+    }, () => {
+        getView(up(req.url), {
+            title: "Admin Signup",
+            data: {
+                csrfToken: req.csrfToken()
+            }
+        })
+        .then(result => {
+            res.send(result);
+        })
+        .catch(e => console.error(e));
+    });
+});
+
 app.get(/^\/plugin\/(.+)?$/i, (req, res) => {
     authorize(
         req, dbs,
@@ -135,6 +154,27 @@ app.post("/login", csrfProtection, (req, res) => {
     }, () => {
         res.redirect("/pc_admin");
     });
+});
+
+app.post("/signup", csrfProtection, (req, res) => {
+    if(req.body.password === req.body.password) {
+        if (!res) {
+            const newAdminUser = new dbs.AdminUserModel({
+                _id: new Types.ObjectId(),
+                displayName: req.body.displayName,
+                name: req.body.username.toLowerCase(),
+                password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync())
+            } as User);
+
+            newAdminUser.save((err) => {
+                if (err) return console.error(err);
+                console.log("created admin user");
+                res.redirect("/pc_admin/login");
+            });
+        }
+    } else {
+        res.redirect("/pc_admin/signup");
+    }
 });
 
 export default function(db, str) {

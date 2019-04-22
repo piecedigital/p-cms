@@ -1,4 +1,3 @@
-import * as bcrypt from "bcryptjs";
 import {
     Connection,
     Model,
@@ -11,7 +10,6 @@ import {
 } from "mongoose";
 import { readFile } from "fs";
 import { join } from "path";
-import { User } from "./user.class";
 
 /**
  * The core database class that houses all CRUD needs
@@ -44,29 +42,6 @@ class Database {
                     json.DB_NAME,
                 );
             }
-        });
-    }
-
-    setupFirstAdminUser() {
-        this.AdminUserModel.findOne({}, (err, res: Document) => {
-            console.log("looking for admin user");
-
-            if (!res) {
-                console.log("no admin user");
-
-                const newAdminUser = new this.AdminUserModel({
-                    _id: new Types.ObjectId(),
-                    name: "admin",
-                    password: bcrypt.hashSync("password", bcrypt.genSaltSync())
-                } as User);
-
-                newAdminUser.save((err) => {
-                    if (err) return console.error(err);
-                    console.log("created admin user");
-                });
-                return;
-            }
-            console.log("found admin user");
         });
     }
 
@@ -109,6 +84,7 @@ class Database {
 }
 
 const UserSchema: Schema = new Schema({
+    displayName: { type: String, required: true },
     name: { type: String, required: true },
     password: { type: String, required: true },
 }, { timestamps: true });

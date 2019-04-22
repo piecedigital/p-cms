@@ -103,27 +103,3 @@ app.get("*", (req, res) => {
 app.listen(PORT, () => {
     console.log("Listening on port", PORT);
 });
-
-// dbs.errorCallback = () => {
-//     console.log("Fail fallback server");
-
-//     const PORT = process.env["PORT"] || 8080;
-
-//     const app = express();
-
-//     app.use("/public", express.static(join(__dirname, "public")));
-//     app.get("*", (req, res) => {
-//         res.send(getView(req.url, {
-//             title: "Error",
-//             viewName: "internalError",
-//             data: {
-//                 code: 500,
-//                 message: "There was an error establishing a connection to the database"
-//             }
-//         }));
-//     });
-
-//     app.listen(PORT, () => {
-//         console.log("Listening on port", PORT);
-//     });
-// }

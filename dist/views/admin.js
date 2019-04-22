@@ -64,6 +64,7 @@ var AdminDashboard = /** @class */ (function (_super) {
                 React.createElement("section", { className: "main-content" },
                     React.createElement(react_router_1.Switch, null,
                         React.createElement(react_router_1.Route, { path: "/pc_admin/login", render: function (props) { return React.createElement(AdminLogin, __assign({}, props, _this.props)); } }),
+                        React.createElement(react_router_1.Route, { path: "/pc_admin/signup", render: function (props) { return React.createElement(AdminSignup, __assign({}, props, _this.props)); } }),
                         React.createElement(react_router_1.Route, { path: "/pc_admin/db-setup", render: function (props) { return React.createElement(AdminDBSetup, __assign({}, props, _this.props)); } }),
                         this.state.adminViews.map(function (view) {
                             return (React.createElement(react_router_1.Route, { key: view.name, path: "/pc_admin/plugin/" + view.directory, render: function (props) { return React.createElement(view.component, __assign({}, props, _this.props)); } }));
@@ -104,7 +105,7 @@ var AdminLogin = /** @class */ (function (_super) {
             React.createElement("section", { className: "header" },
                 React.createElement("div", { className: "page-wrap" },
                     React.createElement("header", null,
-                        React.createElement("h1", null, "Administration")),
+                        React.createElement("h1", null, "Login")),
                     React.createElement("form", { action: "/pc_admin/login", method: "POST" },
                         React.createElement("input", { type: "hidden", name: "_csrf", value: this.props.csrfToken }),
                         React.createElement("div", null,
@@ -122,6 +123,42 @@ var AdminLogin = /** @class */ (function (_super) {
     return AdminLogin;
 }(React.Component));
 exports.AdminLogin = AdminLogin;
+var AdminSignup = /** @class */ (function (_super) {
+    __extends(AdminSignup, _super);
+    function AdminSignup(props) {
+        return _super.call(this, props) || this;
+    }
+    AdminSignup.prototype.render = function () {
+        return ([
+            React.createElement("section", { className: "header" },
+                React.createElement("div", { className: "page-wrap" },
+                    React.createElement("header", null,
+                        React.createElement("h1", null, "Signup")),
+                    React.createElement("form", { action: "/pc_admin/signup", method: "POST" },
+                        React.createElement("input", { type: "hidden", name: "_csrf", value: this.props.csrfToken }),
+                        React.createElement("div", null,
+                            React.createElement("label", { htmlFor: "" }, "Your Name:"),
+                            React.createElement("br", null),
+                            React.createElement("input", { type: "text", name: "displayName" })),
+                        React.createElement("div", null,
+                            React.createElement("label", { htmlFor: "" }, "Username:"),
+                            React.createElement("br", null),
+                            React.createElement("input", { type: "text", name: "username" })),
+                        React.createElement("div", null,
+                            React.createElement("label", { htmlFor: "" }, "Password:"),
+                            React.createElement("br", null),
+                            React.createElement("input", { type: "password", name: "password" })),
+                        React.createElement("div", null,
+                            React.createElement("label", { htmlFor: "" }, "Password:"),
+                            React.createElement("br", null),
+                            React.createElement("input", { type: "password", name: "passwordConfirm" })),
+                        React.createElement("div", null,
+                            React.createElement("button", { type: "submit" }, "Signup")))))
+        ]);
+    };
+    return AdminSignup;
+}(React.Component));
+exports.AdminSignup = AdminSignup;
 var AdminDBSetup = /** @class */ (function (_super) {
     __extends(AdminDBSetup, _super);
     function AdminDBSetup(props) {
