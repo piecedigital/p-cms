@@ -1,7 +1,7 @@
 import Store from "./store";
 import { Plugin, PluginRegister } from "./plugin.class";
 import Database from "./database";
-import { readdirSync, readFileSync } from "fs";
+import { readdirSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 
 export interface AggrOptions {
@@ -51,6 +51,25 @@ export interface loadedPluginData {
     pr: PluginRegister,
     component: any,
     directory: string
+}
+
+export function updateSRVConfig(data: Record<string, any>) {
+    let config: Record<string, any> = {};
+
+    try {
+        config = JSON.parse(readFileSync(join(__dirname, "../srv-config.json")).toString());
+    } catch (error) {
+        config.theme = "example";
+    }
+
+    Object.keys(data)
+        .map(key => {
+            let updateData = data[key];
+
+            config[key] = updateData;
+        });
+
+    writeFileSync(join(__dirname, "../srv-config.json"), JSON.stringify(data));
 }
 
 // gets every plugin and its database data
@@ -148,14 +167,19 @@ export function queryOneCollection(dbs: Database, query: CollectionQuery) {
             // No query?! YOU GET NOTHING! YOU LOSE! GOOD DAY, SIR!
             resolve(data);
         } else {
-            dbs.dbs.collection(query.collectionName).find(query.query, {}).toArray((err, docs: Document[] = []) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    data[query.collectionName] = docs || [];
-                    resolve(data);
-                }
-            });
+            let cursor = dbs.dbs.collection(query.collectionName).find(query.query, {});
+            if(cursor) {
+                cursor.toArray((err, docs: Document[] = []) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        data[query.collectionName] = docs || [];
+                        resolve(data);
+                    }
+                });
+            } else {
+                resolve(data);
+            }
         }
     });
 }

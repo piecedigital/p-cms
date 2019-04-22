@@ -40,7 +40,7 @@
 
 1. Restart MongoDB with access control: `mongod --auth`
 
-In order to connect to the database with authentication enabled use this command: `mongo -u "<username>" -p "<password>" --authenticationDatabase "admin"`
+In order to connect to the database with authentication enabled use this command and use your admin logins: `mongo -u "<username>" -p "<password>" --authenticationDatabase "admin"`
 
 **NOTE**: Be sure to change the credentials in `index.js`.
 
@@ -57,7 +57,7 @@ In order to connect to the database with authentication enabled use this command
 
 1. Do it: `npm start`
 
-**NOTE**: Currently, starting the server will create an `admin` user with password `password` to access the dashboard. In the future there will be a proper way of setting up an admin user.
+**NOTE**: Currently, starting the server will create an admin user **(username is `admin`, password is `password`)** to access the dashboard. In the future there will be a proper way of setting up an admin user.
 
 ## The Dashboard
 

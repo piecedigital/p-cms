@@ -2,8 +2,8 @@ import * as express from "express";
 import { join } from "path";
 import * as cookieParser from "cookie-parser";
 import * as bodyParser from "body-parser";
-import { Types } from "mongoose";
-import * as bcrypt from "bcryptjs";
+// import { Types } from "mongoose";
+// import * as bcrypt from "bcryptjs";
 import * as helmet from "helmet";
 import adminRoutes from "./modules/admin-routes";
 import api from "./modules/api";
@@ -12,9 +12,10 @@ import pluginRoutes from "./modules/plugin-routes";
 import Database from "./modules/database";
 import Store from "./modules/store";
 import { getView } from "./modules/render";
-import { UserInterface, User } from "./modules/user.class";
+// import { UserInterface, User } from "./modules/user.class";
 import { registerAdminView } from "./modules/register-admin-view";
-import { urlPrefixer, getPlugins } from "./modules/helpers";
+import { getPlugins } from "./modules/helpers";
+// import { readFile } from "fs";
 
 const dbs = new Database();
 const store = new Store();
@@ -33,112 +34,96 @@ function getPluginsAndRegister(pluginType: string = "standard") {
     })
 }
 
-dbs.successCallback = () => {
-    const PORT = process.env["PORT"] || 8080;
-    const app = express();
+const PORT = process.env["PORT"] || 8080;
+const app = express();
 
-    const registerData = require(join(__dirname, "register.json"));
+let registerData: Record<string, any> = {};
 
-    // find or make temporary admin user
-    // TODO: implement real process for creating a first admin user
-    dbs.AdminUserModel.findOne({
-        name: "admin"
-    } as UserInterface, (err, res: Document) => {
-        console.log("looking for admin user");
+try {
+    registerData = require(join(__dirname, "srv-config.json")) || {};
+} catch (error) {
+}
 
-        if(!res) {
-            console.log("no admin user");
+process.env["THEME"] = registerData.theme || "example";
 
-            const newAdminUser = new dbs.AdminUserModel({
-                _id: new Types.ObjectId(),
-                name: "admin",
-                password: bcrypt.hashSync("password", bcrypt.genSaltSync())
-            } as User);
+// load standard plugins
+getPluginsAndRegister();
+// load custom plugsins
+getPluginsAndRegister("custom");
 
-            newAdminUser.save((err) => {
-                if(err) return console.error(err);
-                console.log("created admin user");
-            });
-            return;
+// header setup
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            // styleSrc: ["'self'"],
+            // scriptSrc: ["'self'"],
+            reportUri: "/report-violation"
         }
-        console.log("found admin user");
-    });
+    }
+}));
 
-    process.env["THEME"] = registerData.theme || "example";
-    // console.log(registerData, process.env["THEME"]);
+app.use("/favicon.ico", (req, res) => {
+    try {
+        res.sendFile(join(__dirname, "public/media/images/favicon.ico"));
+    } catch(e) {
+        console.log("Welp... guess no favicon");
+    }
+});
+app.use("/public", express.static(join(__dirname, "public")));
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
-    // load standard plugins
-    getPluginsAndRegister();
-    // load custom plugsins
-    getPluginsAndRegister("custom");
-
-    // header setup
-    app.use(helmet({
-        contentSecurityPolicy: {
-            directives: {
-                defaultSrc: ["'self'"],
-                // styleSrc: ["'self'"],
-                // scriptSrc: ["'self'"],
-                reportUri: "/report-violation"
-            }
-        }
+// route setup
+app.use("/pc_admin", adminRoutes(dbs, store));
+app.use("*", (req, res, next) => {
+    if(dbs.Connected) {
+        next();
+    } else {
+        res.redirect("/pc_admin");
+    }
+})
+pluginRoutes("standard", store, data => {
+    app.use("/api", data(dbs, store));
+});
+pluginRoutes("custom", store, data => {
+    app.use("/api", data(dbs, store));
+});
+app.use("/api", api(dbs, store));
+app.use(themeRoutes(dbs, store));
+app.get("*", (req, res) => {
+    // console.log(req.path);
+    res.status(404).send(getView(req.url, {
+        title: "Not Found",
+        viewName: "404"
     }));
+});
 
-    app.use("/favicon.ico", (req, res) => {
-        try {
-            res.sendFile(join(__dirname, "public/media/images/favicon.ico"));
-        } catch(e) {
-            console.log("Welp... guess no favicon");
-        }
-    });
-    app.use("/public", express.static(join(__dirname, "public")));
-    app.use(cookieParser());
-    app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(bodyParser.json());
+app.listen(PORT, () => {
+    console.log("Listening on port", PORT);
+});
 
-    // route setup
-    app.use("/pc_admin", adminRoutes(dbs, store));
-    pluginRoutes("standard", store, data => {
-        app.use("/api", data(dbs, store));
-    });
-    pluginRoutes("custom", store, data => {
-        app.use("/api", data(dbs, store));
-    });
-    app.use("/api", api(dbs, store));
-    app.use(themeRoutes(dbs, store));
-    app.get("*", (req, res) => {
-        // console.log(req.path);
-        res.status(404).send(getView(req.url, {
-            title: "Not Found",
-            viewName: "404"
-        }));
-    });
+// dbs.errorCallback = () => {
+//     console.log("Fail fallback server");
 
-    app.listen(PORT, () => {
-        console.log("Listening on port", PORT);
-    });
-}
+//     const PORT = process.env["PORT"] || 8080;
 
-dbs.errorCallback = () => {
-    console.log("Fail fallback server");
+//     const app = express();
 
-    const PORT = process.env["PORT"] || 8080;
+//     app.use("/public", express.static(join(__dirname, "public")));
+//     app.get("*", (req, res) => {
+//         res.send(getView(req.url, {
+//             title: "Error",
+//             viewName: "internalError",
+//             data: {
+//                 code: 500,
+//                 message: "There was an error establishing a connection to the database"
+//             }
+//         }));
+//     });
 
-    const app = express();
-
-    app.use("/public", express.static(join(__dirname, "public")));
-    app.get("*", (req, res) => {
-        res.send(getView(req.url, {
-            title: "Error",
-            viewName: "internalError",
-            data: {
-                code: 500,
-                message: "There was an error establishing a connection to the database"
-            }
-        }));
-    });
-
-    app.listen(PORT, () => {
-        console.log("Listening on port", PORT);
-    });
-}
+//     app.listen(PORT, () => {
+//         console.log("Listening on port", PORT);
+//     });
+// }

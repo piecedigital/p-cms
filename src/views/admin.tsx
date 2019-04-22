@@ -54,6 +54,7 @@ export class AdminDashboard extends React.Component {
                 <section className="main-content">
                     <Switch>
                         <Route path="/pc_admin/login" render={(props) => <AdminLogin {...props} {...this.props} />} />
+                        <Route path="/pc_admin/db-setup" render={(props) => <AdminDBSetup {...props} {...this.props} />} />
                         {
                             this.state.adminViews.map(view => {
                                 return (
@@ -126,6 +127,55 @@ export class AdminLogin extends React.Component {
                         </div>
                         <div>
                             <button type="submit">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        ]);
+    }
+
+}
+
+export class AdminDBSetup extends React.Component {
+    state: {};
+    props: {
+        csrfToken?: string
+    } | any;
+
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return ([
+            <section className="header">
+                <div className="page-wrap">
+                    <header>
+                        <h1>
+                            Setup Database Connection
+                        </h1>
+                    </header>
+                    <form action="/pc_admin/db-setup" method="POST">
+                        <input type="hidden" name="_csrf" value={this.props.csrfToken} />
+                        <div>
+                            <label htmlFor="">Database Name:</label><br />
+                            <input type="text" name="dbName" placeholder="piecedigital-cms" />
+                        </div>
+                        <div>
+                            <label htmlFor="">Database Host:</label><br />
+                            <input type="text" name="dbHost" placeholder="localhost" />
+                        </div>
+
+                        <div>
+                            <label htmlFor="">Username:</label><br />
+                            <input type="text" name="username" />
+                        </div>
+                        <div>
+                            <label htmlFor="">Password:</label><br />
+                            <input type="password" name="password" />
+                        </div>
+                        <div>
+                            <button type="submit">Submit</button>
                         </div>
                     </form>
                 </div>

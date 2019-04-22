@@ -5,7 +5,7 @@ import { getView } from "./render";
 import { authorize, authenticate, deauthenticate } from "./auth";
 import Database from "./database";
 import Store from "./store";
-import { aggregateAllPluginData, urlPrefixer } from "./helpers";
+import { aggregateAllPluginData, urlPrefixer, updateSRVConfig } from "./helpers";
 
 const app = express();
 let dbs: Database = null;
@@ -14,8 +14,16 @@ const csrfProtection = csrf({ cookie: true });
 
 var up = urlPrefixer("/pc_admin");
 
+app.get("*", (req, res, next) => {
+    if (!dbs.Connected && !req.url.match("db-setup")) {
+        res.redirect("/pc_admin/db-setup");
+        return;
+    } else {
+        next();
+    }
+});
+
 app.get("/", csrfProtection, (req, res) => {
-    // console.log(`/`, req.path);
     authorize(
         req, dbs,
         () => {
@@ -34,7 +42,45 @@ app.get("/", csrfProtection, (req, res) => {
     );
 });
 
-app.get("/logout", csrfProtection, (req, res) => {
+app.get("/db-setup", csrfProtection, (req, res) => {
+    getView(up(req.url), {
+        title: "Setup Database",
+        data: {
+            csrfToken: req.csrfToken()
+        }
+    })
+    .then(result => {
+        res.send(result);
+    })
+    .catch(e => console.error(e));
+});
+
+app.post("/db-setup", csrfProtection, (req, res) => {
+    const {
+        username,
+        password,
+        dbName,
+        dbHost
+    } = req.body;
+
+    dbs.connect(username, password, dbHost, process.env["DB_PORT"] || 27017, dbName);
+    dbs.successCallback = () => {
+        console.log("successful connection");
+        res.redirect("/pc_admin");
+
+        updateSRVConfig({
+            DB_USER: username,
+            DB_PASS: password,
+            DB_NAME: dbName,
+            DB_HOST: dbHost,
+        });
+    };
+    dbs.errorCallback = err => {
+        console.error(err);
+    }
+});
+
+app.get("/logout", (req, res) => {
     // console.log(`"/pc_admin-logout"`, req.path);
     deauthenticate(dbs, req.cookies["sessId"]);
     res.cookie("sessId", null);
@@ -59,8 +105,7 @@ app.get("/login", csrfProtection, (req, res) => {
     });
 });
 
-app.get(/^\/plugin\/(.+)?$/i, csrfProtection, (req, res) => {
-    console.log(`/^\/plugin\/(.+)?$/i`, req.path);
+app.get(/^\/plugin\/(.+)?$/i, (req, res) => {
     authorize(
         req, dbs,
         () => {

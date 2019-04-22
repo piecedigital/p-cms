@@ -2,6 +2,22 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs_1 = require("fs");
 var path_1 = require("path");
+function updateSRVConfig(data) {
+    var config = {};
+    try {
+        config = JSON.parse(fs_1.readFileSync(path_1.join(__dirname, "../srv-config.json")).toString());
+    }
+    catch (error) {
+        config.theme = "example";
+    }
+    Object.keys(data)
+        .map(function (key) {
+        var updateData = data[key];
+        config[key] = updateData;
+    });
+    fs_1.writeFileSync(path_1.join(__dirname, "../srv-config.json"), JSON.stringify(data));
+}
+exports.updateSRVConfig = updateSRVConfig;
 // gets every plugin and its database data
 function aggregateAllPluginData(dbs, store, options, callback) {
     if (options === void 0) { options = {}; }
@@ -89,16 +105,22 @@ function queryOneCollection(dbs, query) {
             resolve(data);
         }
         else {
-            dbs.dbs.collection(query.collectionName).find(query.query, {}).toArray(function (err, docs) {
-                if (docs === void 0) { docs = []; }
-                if (err) {
-                    reject(err);
-                }
-                else {
-                    data[query.collectionName] = docs || [];
-                    resolve(data);
-                }
-            });
+            var cursor = dbs.dbs.collection(query.collectionName).find(query.query, {});
+            if (cursor) {
+                cursor.toArray(function (err, docs) {
+                    if (docs === void 0) { docs = []; }
+                    if (err) {
+                        reject(err);
+                    }
+                    else {
+                        data[query.collectionName] = docs || [];
+                        resolve(data);
+                    }
+                });
+            }
+            else {
+                resolve(data);
+            }
         }
     });
 }

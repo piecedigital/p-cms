@@ -1,0 +1,8 @@
+{
+    "DB_NAME": "pds-cms",
+    "DB_USER": "darryl",
+    "DB_PASS": "password",
+    "DB_HOST": "localhost",
+    "DB_PORT": 27017,
+    "theme": "example"
+}
