@@ -4,9 +4,9 @@ import { StaticRouter as Router, Route } from "react-router";
 import * as handlebars from "handlebars";
 import * as filter from "handlebars.filter";
 
-import { HandlebarsHandler, ReactHandler } from "../views/layout";
+import { HandlebarsHandler } from "../content-handler";
 import Database from "./database";
-import { queryManyCollections, regexURL } from "./helpers";
+import { queryManyCollections, regexURL, swapParamMarkers } from "./helpers";
 
 // filter.registerFilter("foobar", function (data, other) {
 //     const res = (data);
@@ -28,48 +28,19 @@ export function getView(url: string, options: renderOptions): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         let result = "";
 
-        if(url.match(/^\/pc_admin/)) {
-            // TODO: move aggregation here
+        const source = HandlebarsHandler(url);
 
-            result = `${renderToString(
-                <Router location={url} context={context}>
-                    <Route exact={true} component={(props) => <ReactHandler {...props} {...options.data} database={options.database} />} />
-                </Router>
-            )}`;
+        // got through each query and swap parameter markers
+        // swapParamMarkers(source);
 
-            resolve(result);
-        } else {
-            const source = HandlebarsHandler(url);
+        queryManyCollections(options.database, source.queryList)
+            .then((dbData) => {
+                // console.log(dbData);
+                const template = handlebars.compile(source.page);
+                result = template(Object.assign(options.data || {}, source.params, dbData));
 
-            // got through each query and swap parameter markers
-            source.queryList.map((queryObject, index) => {
-                if(!queryObject.query) return;
-
-                Object.keys(queryObject.query)
-                    .map(queryKey => {
-                        const queryData = queryObject.query[queryKey];
-
-                        const regexMatcher = /{:(.+)}/;
-                        const match = queryData.match(regexMatcher);
-
-                        const param = Object.keys(regexURL(queryData).params).pop();
-
-                        if (match) {
-                            // swap
-                            source.queryList[index].query[queryKey] = source.params[param];
-                        }
-                    });
-            });
-
-            queryManyCollections(options.database, source.queryList)
-                .then((dbData) => {
-                    // console.log(dbData);
-                    const template = handlebars.compile(source.page);
-                    result = template(Object.assign(options.data || {}, source.params, dbData));
-
-                    resolve(result);
-                })
-                .catch(e => reject(e));
-        }
+                resolve(result);
+            })
+            .catch(e => reject(e));
     });
 }

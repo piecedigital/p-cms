@@ -4,9 +4,9 @@ DO NOT REMOVE
 */
 import * as express from "express";
 import { Document, Types } from "mongoose";
-import { getView } from "../../../modules/render";
-import Database from "../../../modules/database";
-import Store from "../../../modules/store";
+import { getView } from "../../modules/render";
+import Database from "../../modules/database";
+import Store from "../../modules/store";
 import { Project, ProjectModel } from "./portfolio.class";
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";

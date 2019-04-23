@@ -131,12 +131,13 @@ function urlPrefixer(prefix) {
     };
 }
 exports.urlPrefixer = urlPrefixer;
-function getPlugins(pluginType, callback) {
-    if (pluginType === void 0) { pluginType = "standard"; }
-    fs_1.readdirSync(path_1.join(__dirname, "../plugins/" + pluginType))
+// export function getPlugins(pluginType: string = "standard", callback: (data: any) => void) {
+function getPlugins(callback) {
+    fs_1.readdirSync(path_1.join(__dirname, "../plugins"))
         .map(function (folder) {
-        var pr = require(path_1.join(__dirname, "../plugins/" + pluginType, folder, "info.json"));
-        var component = require(path_1.join(__dirname, "../plugins/" + pluginType, folder, "index"));
+        var pr = JSON.parse(fs_1.readFileSync(path_1.join(__dirname, "../plugins", folder, "info.json")).toString());
+        var component = fs_1.readFileSync(path_1.join(__dirname, "../plugins", folder, "index.handlebars")).toString();
+        // const component = readFileSync(join(__dirname, `../plugins`, folder, "index.js")).toString();
         return { pr: pr, component: component, directory: folder };
     })
         .map(function (data) {
@@ -148,9 +149,8 @@ function getThemes() {
     return fs_1.readdirSync(path_1.join(__dirname, "../themes"))
         .map(function (folder) {
         try {
-            var tr = require(path_1.join(__dirname, "../themes", folder, "info.json"));
-            var component = require(path_1.join(__dirname, "../themes", folder, "index"));
-            return { tr: tr, component: component, directory: folder };
+            var tr = JSON.parse(fs_1.readFileSync(path_1.join(__dirname, "../themes", folder, "info.json")).toString());
+            return { tr: tr, directory: folder };
         }
         catch (e) {
             console.error("Skipping \"" + folder + "\". Reason: " + e.message || e);
@@ -202,7 +202,19 @@ function getViewContent(url, contentRoot) {
         data.params = routeData.params || {};
         data.query = routeData.queryList || [];
         data.page = function () {
-            return fs_1.readFileSync(contentRoot + "/pages/" + routeData.page).toString();
+            var page = routeData.page;
+            var params = regexURL(routeData.page
+                .replace(/\.\.\//g, "")
+                .replace(/\/\w+\.\w+$/, "")
+                .replace("plugins", "plugin"));
+            var param = Object.keys(params.params).pop();
+            var match = url.match(params.regexURL);
+            // console.log(url, params.regexURL, match);
+            if (match) {
+                page = page.replace("{:" + param + "}", match[1]);
+            }
+            var path = path_1.join(contentRoot, "pages/" + page);
+            return fs_1.readFileSync(path).toString();
         };
         routes[routeKey] = data;
     });
@@ -213,7 +225,7 @@ function getViewContent(url, contentRoot) {
 }
 exports.getViewContent = getViewContent;
 function getAdminContent(url) {
-    var themeRoot = path_1.join(__dirname, "../admin/" + process.env["THEME"]);
+    var themeRoot = path_1.join(__dirname, "../admin");
     return getViewContent(url, themeRoot);
 }
 exports.getAdminContent = getAdminContent;
@@ -222,44 +234,6 @@ function getThemeContent(url) {
     return getViewContent(url, themeRoot);
 }
 exports.getThemeContent = getThemeContent;
-// export function getThemeContent(url: string) {
-//     let header: string = "";
-//     let footer: string = "";
-//     let json: Record<string, any> = {};
-//     const themeRoot = join(__dirname, `../themes/${process.env["THEME"]}`);
-//     try {
-//         header = readFileSync(`${themeRoot}/partials/header.handlebars`).toString();
-//         footer = readFileSync(`${themeRoot}/partials/footer.handlebars`).toString();
-//         json = JSON.parse(readFileSync( `${themeRoot}/routes.json`).toString());
-//     } catch (error) {
-//         console.error(`Theme requires 3 files: "partials/header.handlebars", "partials/footer.handlebars", and "routes.json"`);
-//         console.error(error.message);
-//         return {
-//             params: {},
-//             queryList: [],
-//             page: "<center><h1>Critical error getting page content</h1></center>"
-//         }
-//     }
-//     let routes: Record<string, Route> = {};
-//     Object.keys(json).map(routeKey => {
-//         const routeData = json[routeKey];
-//         let data: Route = {
-//             params: {},
-//             page: null,
-//             query: []
-//         };
-//         data.params = routeData.params || {};
-//         data.query = routeData.queryList || [];
-//         data.page = () => {
-//             return readFileSync(`${themeRoot}/pages/${routeData.page}`).toString()
-//         }
-//         routes[routeKey] = data;
-//     });
-//     // url match
-//     const results = pickPage(url, routes);
-//     results.page = header + results.page + footer;
-//     return results
-// }
 function pickPage(url, routes) {
     var arr = Object.keys(routes);
     var params = {};
@@ -290,10 +264,31 @@ function pickPage(url, routes) {
         var routeString = "404";
         page = routes[routeString].page();
     }
-    return {
+    var res = {
         page: page,
         params: params,
         queryList: queryList
     };
+    swapParamMarkers(res);
+    return res;
 }
 exports.pickPage = pickPage;
+function swapParamMarkers(res) {
+    res.queryList.map(function (queryObject, index) {
+        if (!queryObject.query)
+            return;
+        Object.keys(queryObject.query)
+            .map(function (queryKey) {
+            var queryData = queryObject.query[queryKey];
+            var regexMatcher = /{:(.+)}/;
+            var match = queryData.match(regexMatcher);
+            var param = Object.keys(regexURL(queryData).params).pop();
+            if (match) {
+                // swap
+                res.queryList[index].query[queryKey] = res.params[param];
+                console.log(queryKey, queryData, param, res.params[param]);
+            }
+        });
+    });
+}
+exports.swapParamMarkers = swapParamMarkers;

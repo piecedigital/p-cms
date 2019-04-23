@@ -5,16 +5,16 @@ import { join } from "path";
 // let store: Store = null;
 
 
-export default function (pluginType: string, str: Store, cb: (data) => void) {
+export default function  (str: Store, cb: (data) => void) {
     str.getPlugins().map(plugin => {
         // require module and send back to callback
         try {
-            const module = require(join(__dirname, `../plugins/${pluginType}`, plugin.directory, "api.js"));
+            const module = require(join(__dirname, `../plugins`, plugin.directory, "api.js"));
 
             cb(module.default);
         }
         catch(e) {
-            console.error(`No API for ${pluginType} plugin "${plugin.name}"`);
+            console.error(`No API for plugin "${plugin.name}"`);
             // console.error(e);
         }
     });

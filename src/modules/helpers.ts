@@ -43,7 +43,7 @@ export interface ThemeRegister {
 
 export interface loadedThemeData {
     tr: ThemeRegister,
-    component: any,
+    // component: any,
     directory: string
 }
 
@@ -190,11 +190,13 @@ export function urlPrefixer(prefix: string): (url: string) => string {
     }
 }
 
-export function getPlugins(pluginType: string = "standard", callback: (data: any) => void) {
-    readdirSync(join(__dirname, `../plugins/${pluginType}`))
+// export function getPlugins(pluginType: string = "standard", callback: (data: any) => void) {
+export function getPlugins(callback: (data: any) => void) {
+    readdirSync(join(__dirname, `../plugins`))
     .map((folder: string) => {
-        const pr: PluginRegister = require(join(__dirname, `../plugins/${pluginType}`, folder, "info.json"));
-        const component = require(join(__dirname, `../plugins/${pluginType}`, folder, "index"));
+        const pr: PluginRegister = JSON.parse(readFileSync(join(__dirname, `../plugins`, folder, "info.json")).toString());
+        const component = readFileSync(join(__dirname, `../plugins`, folder, "index.handlebars")).toString();
+        // const component = readFileSync(join(__dirname, `../plugins`, folder, "index.js")).toString();
         return { pr, component, directory: folder };
     })
     .map((data: loadedPluginData) => {
@@ -206,9 +208,8 @@ export function getThemes(): loadedThemeData[] {
     return readdirSync(join(__dirname, `../themes`))
     .map((folder: string) => {
         try {
-            const tr: ThemeRegister = require(join(__dirname, "../themes", folder, "info.json"));
-            const component = require(join(__dirname, "../themes", folder, "index"));
-            return { tr, component, directory: folder };
+            const tr: ThemeRegister = JSON.parse(readFileSync(join(__dirname, "../themes", folder, "info.json")).toString());
+            return { tr, directory: folder };
         }
         catch(e) {
             console.error(`Skipping "${folder}". Reason: ${e.message}` || e);
@@ -233,7 +234,7 @@ export function regexURL(url: string) {
     return x;
 }
 
-export function getViewContent(url: string, contentRoot: string) {
+export function getViewContent(url: string, contentRoot: string): PageResults {
     let header: string = "";
     let footer: string = "";
     let json: Record<string, any> = {};
@@ -265,7 +266,24 @@ export function getViewContent(url: string, contentRoot: string) {
         data.params = routeData.params || {};
         data.query = routeData.queryList || [];
         data.page = () => {
-            return readFileSync(`${contentRoot}/pages/${routeData.page}`).toString()
+            let page = routeData.page;
+
+            const params = regexURL(routeData.page
+                .replace(/\.\.\//g, "")
+                .replace(/\/\w+\.\w+$/, "")
+                .replace("plugins", "plugin"));
+            const param = Object.keys(params.params).pop();
+            const match = url.match(params.regexURL);
+
+            // console.log(url, params.regexURL, match);
+
+            if (match) {
+                page = page.replace(`{:${param}}`, match[1]);
+            }
+
+            const path = join(contentRoot, `pages/${page}`);
+
+            return readFileSync(path).toString()
         }
 
         routes[routeKey] = data;
@@ -278,64 +296,17 @@ export function getViewContent(url: string, contentRoot: string) {
     return results
 }
 
-export function getAdminContent(url: string) {
-    const themeRoot = join(__dirname, `../admin/${process.env["THEME"]}`);
+export function getAdminContent(url: string): PageResults {
+    const themeRoot = join(__dirname, `../admin`);
 
     return getViewContent(url, themeRoot);
 }
 
-export function getThemeContent(url: string) {
+export function getThemeContent(url: string): PageResults {
     const themeRoot = join(__dirname, `../themes/${process.env["THEME"]}`);
 
     return getViewContent(url, themeRoot);
 }
-
-// export function getThemeContent(url: string) {
-//     let header: string = "";
-//     let footer: string = "";
-//     let json: Record<string, any> = {};
-
-//     const themeRoot = join(__dirname, `../themes/${process.env["THEME"]}`);
-
-//     try {
-//         header = readFileSync(`${themeRoot}/partials/header.handlebars`).toString();
-//         footer = readFileSync(`${themeRoot}/partials/footer.handlebars`).toString();
-//         json = JSON.parse(readFileSync( `${themeRoot}/routes.json`).toString());
-//     } catch (error) {
-//         console.error(`Theme requires 3 files: "partials/header.handlebars", "partials/footer.handlebars", and "routes.json"`);
-//         console.error(error.message);
-//         return {
-//             params: {},
-//             queryList: [],
-//             page: "<center><h1>Critical error getting page content</h1></center>"
-//         }
-//     }
-
-//     let routes: Record<string, Route> = {};
-
-//     Object.keys(json).map(routeKey => {
-//         const routeData = json[routeKey];
-//         let data: Route = {
-//             params: {},
-//             page: null,
-//             query: []
-//         };
-
-//         data.params = routeData.params || {};
-//         data.query = routeData.queryList || [];
-//         data.page = () => {
-//             return readFileSync(`${themeRoot}/pages/${routeData.page}`).toString()
-//         }
-
-//         routes[routeKey] = data;
-//     });
-
-//     // url match
-//     const results = pickPage(url, routes);
-//     results.page = header + results.page + footer;
-
-//     return results
-// }
 
 export function pickPage(url: string, routes: Record<string, Route>): PageResults {
     const arr = Object.keys(routes);
@@ -369,9 +340,37 @@ export function pickPage(url: string, routes: Record<string, Route>): PageResult
         const routeString = "404";
         page = routes[routeString].page();
     }
-    return {
+
+    const res = {
         page,
         params,
         queryList
     };
+
+    swapParamMarkers(res);
+
+    return res;
+}
+
+export function swapParamMarkers(res: PageResults): void {
+    res.queryList.map((queryObject, index) => {
+        if (!queryObject.query) return;
+
+        Object.keys(queryObject.query)
+            .map(queryKey => {
+                const queryData = queryObject.query[queryKey];
+
+                const regexMatcher = /{:(.+)}/;
+                const match = queryData.match(regexMatcher);
+
+                const param = Object.keys(regexURL(queryData).params).pop();
+
+                if (match) {
+                    // swap
+                    res.queryList[index].query[queryKey] = res.params[param];
+
+                    console.log(queryKey, queryData, param, res.params[param]);
+                }
+            });
+    });
 }

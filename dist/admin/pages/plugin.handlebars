@@ -1,0 +1,8 @@
+
+{
+    this.state.adminViews.map(view => {
+        return (
+            <Route key={view.name} path={`/pc_admin/plugin/${view.directory}`} render={(props) => <view.component {...props} {...this.props} />} />
+        );
+    })
+}

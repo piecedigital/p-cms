@@ -14,7 +14,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
-var helpers_1 = require("../../../modules/helpers");
+var helpers_1 = require("../../modules/helpers");
 var Index = /** @class */ (function (_super) {
     __extends(Index, _super);
     function Index(props) {

@@ -1,0 +1,26 @@
+{
+    "/pc_admin/login": {
+        "page": "login.handlebars"
+    },
+    "/pc_admin/signup": {
+        "page": "signup.handlebars"
+    },
+    "/pc_admin/setup": {
+        "page": "setup.handlebars"
+    },
+    "/pc_admin/plugin/{:plug}": {
+        "page": "../../plugins/{:plug}/index.js"
+    },
+    "/pc_admin/$": {
+        "params": {
+            "title": "Dashboard"
+        },
+        "page": "home.handlebars"
+    },
+    "404": {
+        "params": {
+            "title": "404: Not Found"
+        },
+        "page": "404.handlebars"
+    }
+}

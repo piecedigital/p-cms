@@ -1,5 +1,5 @@
 import * as React from "react";
-import { getThemes, loadedThemeData } from "../../../modules/helpers";
+import { getThemes, loadedThemeData } from "../../modules/helpers";
 
 export default class Index extends React.Component {
     state: {

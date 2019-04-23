@@ -20,9 +20,8 @@ var helpers_1 = require("./modules/helpers");
 // import { readFile } from "fs";
 var dbs = new database_1.default();
 var store = new store_1.default();
-function getPluginsAndRegister(pluginType) {
-    if (pluginType === void 0) { pluginType = "standard"; }
-    helpers_1.getPlugins(pluginType, function (data) {
+function getPluginsAndRegister() {
+    helpers_1.getPlugins(function (data) {
         var pr = data.pr, component = data.component, directory = data.directory;
         try {
             store.addPlugin(register_admin_view_1.registerAdminView(pr, directory, component.default));
@@ -41,10 +40,8 @@ try {
 catch (error) {
 }
 process.env["THEME"] = registerData.theme || "example";
-// load standard plugins
+// load plugins
 getPluginsAndRegister();
-// load custom plugsins
-getPluginsAndRegister("custom");
 // header setup
 app.use(helmet({
     contentSecurityPolicy: {
@@ -78,10 +75,7 @@ app.use("*", function (req, res, next) {
         res.redirect("/pc_admin");
     }
 });
-plugin_routes_1.default("standard", store, function (data) {
-    app.use("/api", data(dbs, store));
-});
-plugin_routes_1.default("custom", store, function (data) {
+plugin_routes_1.default(store, function (data) {
     app.use("/api", data(dbs, store));
 });
 app.use("/api", api_1.default(dbs, store));

@@ -20,8 +20,8 @@ import { getPlugins } from "./modules/helpers";
 const dbs = new Database();
 const store = new Store();
 
-function getPluginsAndRegister(pluginType: string = "standard") {
-    getPlugins(pluginType, (data) => {
+function getPluginsAndRegister() {
+    getPlugins((data) => {
         const {
             pr, component, directory
         } = data;
@@ -46,10 +46,8 @@ try {
 
 process.env["THEME"] = registerData.theme || "example";
 
-// load standard plugins
+// load plugins
 getPluginsAndRegister();
-// load custom plugsins
-getPluginsAndRegister("custom");
 
 // header setup
 app.use(helmet({
@@ -84,10 +82,7 @@ app.use("*", (req, res, next) => {
         res.redirect("/pc_admin");
     }
 })
-pluginRoutes("standard", store, data => {
-    app.use("/api", data(dbs, store));
-});
-pluginRoutes("custom", store, data => {
+pluginRoutes(store, data => {
     app.use("/api", data(dbs, store));
 });
 app.use("/api", api(dbs, store));

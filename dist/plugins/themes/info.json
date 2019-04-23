@@ -1,12 +1,10 @@
 {
-    "name": "Portfolio Plugin Example",
+    "name": "Themes Plugin Example",
     "description": "This plugin serves to exemplify the plugin functionality of this CMS",
     "dateCreated": "October 10, 2018",
     "author": "Darryl Dixon",
     "company": "Piece Digital Studios",
 
-    "databaseCollections": [
-        "portfolios"
-    ],
+    "databaseCollections": [],
     "props": {}
 }
