@@ -233,19 +233,17 @@ export function regexURL(url: string) {
     return x;
 }
 
-export function getThemeContent(url: string) {
+export function getViewContent(url: string, contentRoot: string) {
     let header: string = "";
     let footer: string = "";
     let json: Record<string, any> = {};
 
-    const themeRoot = join(__dirname, `../themes/${process.env["THEME"]}`);
-
     try {
-        header = readFileSync(`${themeRoot}/partials/header.handlebars`).toString();
-        footer = readFileSync(`${themeRoot}/partials/footer.handlebars`).toString();
-        json = JSON.parse(readFileSync( `${themeRoot}/routes.json`).toString());
+        header = readFileSync(`${contentRoot}/partials/header.handlebars`).toString();
+        footer = readFileSync(`${contentRoot}/partials/footer.handlebars`).toString();
+        json = JSON.parse(readFileSync(`${contentRoot}/routes.json`).toString());
     } catch (error) {
-        console.error(`Theme requires 3 files: "partials/header.handlebars", "partials/footer.handlebars", and "routes.json"`);
+        console.error(`Content requires 3 files: "partials/header.handlebars", "partials/footer.handlebars", and "routes.json"`);
         console.error(error.message);
         return {
             params: {},
@@ -267,7 +265,7 @@ export function getThemeContent(url: string) {
         data.params = routeData.params || {};
         data.query = routeData.queryList || [];
         data.page = () => {
-            return readFileSync(`${themeRoot}/pages/${routeData.page}`).toString()
+            return readFileSync(`${contentRoot}/pages/${routeData.page}`).toString()
         }
 
         routes[routeKey] = data;
@@ -279,6 +277,65 @@ export function getThemeContent(url: string) {
 
     return results
 }
+
+export function getAdminContent(url: string) {
+    const themeRoot = join(__dirname, `../admin/${process.env["THEME"]}`);
+
+    return getViewContent(url, themeRoot);
+}
+
+export function getThemeContent(url: string) {
+    const themeRoot = join(__dirname, `../themes/${process.env["THEME"]}`);
+
+    return getViewContent(url, themeRoot);
+}
+
+// export function getThemeContent(url: string) {
+//     let header: string = "";
+//     let footer: string = "";
+//     let json: Record<string, any> = {};
+
+//     const themeRoot = join(__dirname, `../themes/${process.env["THEME"]}`);
+
+//     try {
+//         header = readFileSync(`${themeRoot}/partials/header.handlebars`).toString();
+//         footer = readFileSync(`${themeRoot}/partials/footer.handlebars`).toString();
+//         json = JSON.parse(readFileSync( `${themeRoot}/routes.json`).toString());
+//     } catch (error) {
+//         console.error(`Theme requires 3 files: "partials/header.handlebars", "partials/footer.handlebars", and "routes.json"`);
+//         console.error(error.message);
+//         return {
+//             params: {},
+//             queryList: [],
+//             page: "<center><h1>Critical error getting page content</h1></center>"
+//         }
+//     }
+
+//     let routes: Record<string, Route> = {};
+
+//     Object.keys(json).map(routeKey => {
+//         const routeData = json[routeKey];
+//         let data: Route = {
+//             params: {},
+//             page: null,
+//             query: []
+//         };
+
+//         data.params = routeData.params || {};
+//         data.query = routeData.queryList || [];
+//         data.page = () => {
+//             return readFileSync(`${themeRoot}/pages/${routeData.page}`).toString()
+//         }
+
+//         routes[routeKey] = data;
+//     });
+
+//     // url match
+//     const results = pickPage(url, routes);
+//     results.page = header + results.page + footer;
+
+//     return results
+// }
 
 export function pickPage(url: string, routes: Record<string, Route>): PageResults {
     const arr = Object.keys(routes);

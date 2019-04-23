@@ -7,7 +7,7 @@ import { AdminDashboard, AdminLogin } from "../views/admin";
 import { renderOptions } from "../modules/render";
 import { readFileSync } from "fs";
 import { join } from "path";
-import { PageResults, getThemeContent } from "../modules/helpers";
+import { PageResults, getThemeContent, getAdminContent } from "../modules/helpers";
 
 const views: Record<string, any> = {
     "admin": AdminDashboard,
@@ -47,22 +47,9 @@ export class ReactHandler extends React.Component {
 }
 
 export const HandlebarsHandler = function (url: string) {
-    // let theme: (url: string) => PageResults = null;
-
-    // try {
-    //     theme = require(`../themes/${process.env["THEME"]}/index`).default
-    // } catch (error) {
-    //     // console.error(error);
-    //     theme = (url: string) => {
-    //         return {
-    //             params: {},
-    //             page: "500: Theme configuration defunct",
-    //             queryList: []
-    //         } as PageResults
-    //     }
-    // }
-
-    // return theme(url);
-
-    return getThemeContent(url);
+    if (url.match(/^\/pc_admin/)) {
+        return getAdminContent(url);
+    } else {
+        return getThemeContent(url);
+    }
 }

@@ -58,19 +58,10 @@ var ReactHandler = /** @class */ (function (_super) {
 }(React.Component));
 exports.ReactHandler = ReactHandler;
 exports.HandlebarsHandler = function (url) {
-    // let theme: (url: string) => PageResults = null;
-    // try {
-    //     theme = require(`../themes/${process.env["THEME"]}/index`).default
-    // } catch (error) {
-    //     // console.error(error);
-    //     theme = (url: string) => {
-    //         return {
-    //             params: {},
-    //             page: "500: Theme configuration defunct",
-    //             queryList: []
-    //         } as PageResults
-    //     }
-    // }
-    // return theme(url);
-    return helpers_1.getThemeContent(url);
+    if (url.match(/^\/pc_admin/)) {
+        return helpers_1.getAdminContent(url);
+    }
+    else {
+        return helpers_1.getThemeContent(url);
+    }
 };

@@ -173,18 +173,17 @@ function regexURL(url) {
     return x;
 }
 exports.regexURL = regexURL;
-function getThemeContent(url) {
+function getViewContent(url, contentRoot) {
     var header = "";
     var footer = "";
     var json = {};
-    var themeRoot = path_1.join(__dirname, "../themes/" + process.env["THEME"]);
     try {
-        header = fs_1.readFileSync(themeRoot + "/partials/header.handlebars").toString();
-        footer = fs_1.readFileSync(themeRoot + "/partials/footer.handlebars").toString();
-        json = JSON.parse(fs_1.readFileSync(themeRoot + "/routes.json").toString());
+        header = fs_1.readFileSync(contentRoot + "/partials/header.handlebars").toString();
+        footer = fs_1.readFileSync(contentRoot + "/partials/footer.handlebars").toString();
+        json = JSON.parse(fs_1.readFileSync(contentRoot + "/routes.json").toString());
     }
     catch (error) {
-        console.error("Theme requires 3 files: \"partials/header.handlebars\", \"partials/footer.handlebars\", and \"routes.json\"");
+        console.error("Content requires 3 files: \"partials/header.handlebars\", \"partials/footer.handlebars\", and \"routes.json\"");
         console.error(error.message);
         return {
             params: {},
@@ -203,7 +202,7 @@ function getThemeContent(url) {
         data.params = routeData.params || {};
         data.query = routeData.queryList || [];
         data.page = function () {
-            return fs_1.readFileSync(themeRoot + "/pages/" + routeData.page).toString();
+            return fs_1.readFileSync(contentRoot + "/pages/" + routeData.page).toString();
         };
         routes[routeKey] = data;
     });
@@ -212,7 +211,55 @@ function getThemeContent(url) {
     results.page = header + results.page + footer;
     return results;
 }
+exports.getViewContent = getViewContent;
+function getAdminContent(url) {
+    var themeRoot = path_1.join(__dirname, "../admin/" + process.env["THEME"]);
+    return getViewContent(url, themeRoot);
+}
+exports.getAdminContent = getAdminContent;
+function getThemeContent(url) {
+    var themeRoot = path_1.join(__dirname, "../themes/" + process.env["THEME"]);
+    return getViewContent(url, themeRoot);
+}
 exports.getThemeContent = getThemeContent;
+// export function getThemeContent(url: string) {
+//     let header: string = "";
+//     let footer: string = "";
+//     let json: Record<string, any> = {};
+//     const themeRoot = join(__dirname, `../themes/${process.env["THEME"]}`);
+//     try {
+//         header = readFileSync(`${themeRoot}/partials/header.handlebars`).toString();
+//         footer = readFileSync(`${themeRoot}/partials/footer.handlebars`).toString();
+//         json = JSON.parse(readFileSync( `${themeRoot}/routes.json`).toString());
+//     } catch (error) {
+//         console.error(`Theme requires 3 files: "partials/header.handlebars", "partials/footer.handlebars", and "routes.json"`);
+//         console.error(error.message);
+//         return {
+//             params: {},
+//             queryList: [],
+//             page: "<center><h1>Critical error getting page content</h1></center>"
+//         }
+//     }
+//     let routes: Record<string, Route> = {};
+//     Object.keys(json).map(routeKey => {
+//         const routeData = json[routeKey];
+//         let data: Route = {
+//             params: {},
+//             page: null,
+//             query: []
+//         };
+//         data.params = routeData.params || {};
+//         data.query = routeData.queryList || [];
+//         data.page = () => {
+//             return readFileSync(`${themeRoot}/pages/${routeData.page}`).toString()
+//         }
+//         routes[routeKey] = data;
+//     });
+//     // url match
+//     const results = pickPage(url, routes);
+//     results.page = header + results.page + footer;
+//     return results
+// }
 function pickPage(url, routes) {
     var arr = Object.keys(routes);
     var params = {};
