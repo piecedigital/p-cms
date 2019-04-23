@@ -3,10 +3,9 @@ import { Document, Types } from "mongoose";
 import { getView } from "./render";
 import Database from "./database";
 import Store from "./store";
-import { Project } from "../plugins/custom/portfolio/portfolio.class";
+import { Project } from "../plugins/portfolio/portfolio.class";
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
-import { generatedDatabaseDates } from "./helpers";
 
 const app = express();
 let dbs: Database = null;

@@ -1,0 +1,28 @@
+<div class="page-wrap portfolio">
+    <form action="/api/apply-theme" method="POST">
+        <div class="themes">
+            {{#each themes as |theme|}}
+                <input type="radio" name="theme" id="{{theme.directory}}" value={{theme.directory}}
+                    checked={{#filter theme.directory "currentTheme"}}{{/filter}} />
+                <label htmlFor={{theme.directory}} class="theme">
+                    {{#if theme.tr.image}}
+                    <div class="image">
+                        <img src={{theme.tr.image}} />
+                    </div>
+                    {{/if}}
+                    <div class="info">
+                        <div class="project-name">
+                            <span>{{theme.tr.name}}</span>
+                        </div>
+                        <div class="separator"></div>
+                        <div class="project-description">
+                            <span>{{theme.tr.description}}</span>
+                        </div>
+                    </div>
+                </label>
+            {{/each}}
+        </div><br />
+        <div class="separator"></div><br />
+        <button>Apply Theme</button>
+    </form>
+</div>

@@ -1,0 +1,32 @@
+<section class="header">
+    <div class="page-wrap">
+        <header>
+            <h1>
+                Setup Database Connection
+            </h1>
+        </header>
+        <form action="/pc_admin/db-setup" method="POST">
+            <input type="hidden" name="_csrf" value={{csrfToken}} />
+            <div>
+                <label htmlFor="">Database Name:</label><br />
+                <input type="text" name="dbName" placeholder="piecedigital-cms" />
+            </div>
+            <div>
+                <label htmlFor="">Database Host:</label><br />
+                <input type="text" name="dbHost" placeholder="localhost" />
+            </div>
+
+            <div>
+                <label htmlFor="">Username:</label><br />
+                <input type="text" name="username" />
+            </div>
+            <div>
+                <label htmlFor="">Password:</label><br />
+                <input type="password" name="password" />
+            </div>
+            <div>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </div>
+</section>

@@ -1,0 +1,28 @@
+{
+    "/project/{:id}": {
+        "page": "project.handlebars",
+        "queryList": [
+            {
+                "collectionName": "portfolios",
+                "query": {
+                    "projectPK": "{:id}"
+                }
+            }
+        ]
+    },
+    "/$": {
+        "params": {
+            "title": "Home sweet home"
+        },
+        "page": "home.handlebars",
+        "queryList": [{
+            "collectionName": "portfolios"
+        }]
+    },
+    "404": {
+        "params": {
+            "title": "404: Not Found"
+        },
+        "page": "404.handlebars"
+    }
+}

@@ -3,15 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var path_1 = require("path");
 // const app = express();
 // let store: Store = null;
-function default_1(pluginType, str, cb) {
+function default_1(str, cb) {
     str.getPlugins().map(function (plugin) {
         // require module and send back to callback
         try {
-            var module_1 = require(path_1.join(__dirname, "../plugins/" + pluginType, plugin.directory, "api.js"));
+            var module_1 = require(path_1.join(__dirname, "../plugins", plugin.directory, "api.js"));
             cb(module_1.default);
         }
         catch (e) {
-            console.error("No API for " + pluginType + " plugin \"" + plugin.name + "\"");
+            console.error("No API for plugin \"" + plugin.name + "\"");
             // console.error(e);
         }
     });

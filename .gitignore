@@ -1,4 +1,5 @@
 node_modules/
+dist/srv-config.json
 src/themes/*
 !src/themes/example/
 !src/themes/example/*.*

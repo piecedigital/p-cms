@@ -9,8 +9,7 @@
             "es6",
             "es2017",
             "dom"
-        ],
-        "jsx": "react"
+        ]
     },
     "typeAcquisition": {
         "include": [

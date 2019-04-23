@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var mongoose_1 = require("mongoose");
+var fs_1 = require("fs");
+var path_1 = require("path");
 /**
  * The core database class that houses all CRUD needs
  */
@@ -8,8 +10,20 @@ var Database = /** @class */ (function () {
     function Database() {
         var _this = this;
         this.Connected = false;
-        var url = "mongodb://" + process.env.DB_USER + ":" + process.env.DB_PASS + "@" + (process.env.DB_HOST || "localhost") + ":" + (process.env.DB_PORT || 27017) + "/" + process.env.DB_NAME;
         this.dbs = mongoose_1.connection;
+        fs_1.readFile(path_1.join(__dirname, "../srv-config.json"), function (err, data) {
+            if (err) {
+                return;
+            }
+            if (data) {
+                var json = JSON.parse(data.toString());
+                _this.connect(json.DB_USER, json.DB_PASS, json.DB_HOST, json.DB_PORT, json.DB_NAME);
+            }
+        });
+    }
+    Database.prototype.connect = function (DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME) {
+        var _this = this;
+        var url = "mongodb://" + DB_USER + ":" + DB_PASS + "@" + (DB_HOST || "localhost") + ":" + (DB_PORT || 27017) + "/" + DB_NAME;
         mongoose_1.connect(url, {
             useNewUrlParser: true
         }, function (err) {
@@ -22,17 +36,19 @@ var Database = /** @class */ (function () {
         this.dbs.once("open", function () {
             _this.success();
         });
-    }
+    };
     Database.prototype.success = function () {
         this.Connected = true;
         console.log("Successfully established database connection");
         this.generateModels();
-        this.successCallback();
+        if (this.successCallback)
+            this.successCallback();
     };
     Database.prototype.error = function (err) {
         console.log("Failed to establish database connection");
         console.error(err.stack || err);
-        this.errorCallback(err);
+        if (this.errorCallback)
+            this.errorCallback(err);
     };
     /**
      * Generates the models for CRUD operations
@@ -44,6 +60,7 @@ var Database = /** @class */ (function () {
     return Database;
 }());
 var UserSchema = new mongoose_1.Schema({
+    displayName: { type: String, required: true },
     name: { type: String, required: true },
     password: { type: String, required: true },
 }, { timestamps: true });

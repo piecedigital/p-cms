@@ -30,6 +30,7 @@ var react_router_1 = require("react-router");
 var _404_1 = require("../views/404");
 var internal_error_1 = require("../views/internal-error");
 var admin_1 = require("../views/admin");
+var helpers_1 = require("../modules/helpers");
 var views = {
     "admin": admin_1.AdminDashboard,
     "adminLogin": admin_1.AdminLogin,
@@ -41,24 +42,7 @@ var ReactHandler = /** @class */ (function (_super) {
     function ReactHandler(props) {
         var _this = _super.call(this, props) || this;
         // console.log("yerrrr", props.match, props.location);
-        var theme = null;
-        try {
-            theme = require("../themes/" + process.env["THEME"] + "/index").default();
-        }
-        catch (error) {
-            // console.error(error);
-            try {
-                theme = require("../themes/example/index").default();
-            }
-            catch (error) {
-                // console.error(error);
-            }
-        }
-        if (!theme)
-            console.error("There was a problem loading a theme. Even the backup failed...");
-        _this.state = {
-            theme: theme
-        };
+        _this.state = {};
         return _this;
     }
     ReactHandler.prototype.render = function () {
@@ -67,28 +51,17 @@ var ReactHandler = /** @class */ (function (_super) {
             (this.props.children) ? (React.Children.map(this.props.children, function (child) { return React.cloneElement(child, _this.props); })) : (React.createElement(react_router_1.Switch, null,
                 React.createElement(react_router_1.Route, { path: "/pc_admin", component: function (props) {
                         return React.createElement(admin_1.AdminDashboard, __assign({}, props, _this.props));
-                    } }),
-                React.createElement(react_router_1.Route, { path: "/", component: function (props) {
-                        return React.createElement(_this.state.theme, __assign({}, props, _this.props));
                     } })))
         ]);
     };
     return ReactHandler;
 }(React.Component));
 exports.ReactHandler = ReactHandler;
-exports.HandlebarsHandler = function (url, options) {
-    var theme = null;
-    try {
-        theme = require("../themes/" + process.env["THEME"] + "/index").default;
+exports.HandlebarsHandler = function (url) {
+    if (url.match(/^\/pc_admin/)) {
+        return helpers_1.getAdminContent(url);
     }
-    catch (error) {
-        // console.error(error);
-        try {
-            theme = require("../themes/example/index").default;
-        }
-        catch (error) {
-            // console.error(error);
-        }
+    else {
+        return helpers_1.getThemeContent(url);
     }
-    return theme(url);
 };

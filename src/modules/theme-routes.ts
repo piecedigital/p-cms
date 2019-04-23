@@ -12,25 +12,29 @@ let store: Store = null;
 var up = urlPrefixer("");
 
 app.get("/", (req, res) => {
-    // console.log("theme", req.path);
-    aggregateAllPluginData(dbs, store, null, (data) => {
-        // console.log(data);
-        res.send(getView(up(req.url), {
-            title: "Home",
-            data
-        }));
-    });
+    // aggregateAllPluginData(dbs, store, null, (data) => {
+        getView(up(req.url), {
+                title: "Home",
+                // data,
+                database: dbs
+            })
+            .then((result: string) => {
+                res.send(result);
+            })
+            .catch(e => console.error(e));
+    // });
 });
 
 app.get("/*", (req, res) => {
-    // console.log("theme", req.path);
-    aggregateAllPluginData(dbs, store, null, (data) => {
-        // console.log(data);
-        res.send(getView(up(req.url), {
+    getView(up(req.url), {
             title: "Home",
-            data
-        }));
-    });
+            // data,
+            database: dbs
+        })
+        .then((result: string) => {
+            res.send(result);
+        })
+        .catch(e => console.error(e));
 });
 
 export default function(db, str) {

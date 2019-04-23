@@ -8,6 +8,8 @@ import {
     Schema,
     Types
 } from "mongoose";
+import { readFile } from "fs";
+import { join } from "path";
 
 /**
  * The core database class that houses all CRUD needs
@@ -22,9 +24,30 @@ class Database {
     errorCallback: (err: any) => void;
 
     constructor() {
-        var url = `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST || "localhost"}:${process.env.DB_PORT || 27017}/${process.env.DB_NAME}`;
-
         this.dbs = connection;
+
+        readFile(join(__dirname, "../srv-config.json"), (err, data) => {
+            if (err) {
+                return;
+            }
+
+            if (data) {
+                var json = JSON.parse(data.toString());
+
+                this.connect(
+                    json.DB_USER,
+                    json.DB_PASS,
+                    json.DB_HOST,
+                    json.DB_PORT,
+                    json.DB_NAME,
+                );
+            }
+        });
+    }
+
+    connect(DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME) {
+        var url = `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST || "localhost"}:${DB_PORT || 27017}/${DB_NAME}`;
+
         connect(url, {
             useNewUrlParser: true
         }, err => {
@@ -42,13 +65,13 @@ class Database {
         this.Connected = true;
         console.log("Successfully established database connection");
         this.generateModels();
-        this.successCallback();
+        if (this.successCallback) this.successCallback();
     }
 
     private error(err) {
         console.log("Failed to establish database connection");
         console.error(err.stack || err);
-        this.errorCallback(err);
+        if (this.errorCallback) this.errorCallback(err);
     }
 
     /**
@@ -61,6 +84,7 @@ class Database {
 }
 
 const UserSchema: Schema = new Schema({
+    displayName: { type: String, required: true },
     name: { type: String, required: true },
     password: { type: String, required: true },
 }, { timestamps: true });

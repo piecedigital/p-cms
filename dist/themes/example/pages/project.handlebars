@@ -1,0 +1,43 @@
+{{#with portfolios.[0] as |project|}}
+    <nav>
+        <div class="page-wrap">
+        </div>
+    </nav>
+    <section class="header">
+        <div class="page-wrap">
+            <header>
+                <h1>
+                    Project: {{project.name}}
+                </h1>
+            </header>
+        </div>
+    </section>
+    <section>
+        <div class="section-separator">
+            <div class="triangle"></div>
+        </div>
+        <div class="page-wrap">
+            <div>
+                <center>
+                    <img src="{{project.imageURL}}" alt="">
+                </center>
+            </div>
+            <div class="separator"></div>
+            <div>
+                <center>
+                    {{#filter "markdown"}}{{project.description}}{{/filter}}
+                </center>
+            </div>
+        </div>
+    </section>
+    <section class="footer">
+        <div class="section-separator">
+            <div class="triangle"></div>
+        </div>
+        <div class="page-wrap">
+            <footer>
+                &copy; Copyright Darryl Dixon, 2018. All Rights Reserved.
+            </footer>
+        </div>
+    </section>
+{{/with}}

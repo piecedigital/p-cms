@@ -1,0 +1,26 @@
+<section class="header">
+    <div class="page-wrap">
+        <header>
+            <h1>
+                Login
+            </h1>
+        </header>
+        <form action="/pc_admin/login" method="POST">
+            <input type="hidden" name="_csrf" value={{csrfToken}} />
+            <div>
+                <label htmlFor="">Username:</label><br />
+                <input type="text" name="username" />
+            </div>
+            <div>
+                <label htmlFor="">Password:</label><br />
+                <input type="password" name="password" />
+            </div>
+            <div>
+                <button type="submit">Login</button>
+            </div>
+        </form>
+        <footer>
+            Need an account? <a href="/pc_admin/signup">Signup here</a>.
+        </footer>
+    </div>
+</section>

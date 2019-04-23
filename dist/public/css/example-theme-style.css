@@ -1,0 +1,154 @@
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+h1 {
+  margin: 0;
+}
+
+p {
+  font-size: 22px;
+}
+
+.page-wrap {
+  width: 100%;
+  max-width: 1600px;
+  margin: auto;
+}
+
+section {
+  display: flex;
+  align-items: center;
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  padding: 64px 64px;
+}
+section .section-separator {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translate(-50%, 0) scale(2, 1);
+  width: 50%;
+  height: 32px;
+  overflow: hidden;
+}
+section .section-separator .triangle {
+  position: relative;
+  top: 14px;
+  left: 50%;
+  width: 64px;
+  height: 64px;
+  transform: translate(-50%, 0) rotateZ(45deg);
+  background-color: white;
+}
+section:nth-child(odd) {
+  background-color: #fffadc;
+}
+section:nth-child(odd) .section-separator div {
+  background-color: #fffadc;
+}
+section.header {
+  width: 100%;
+  padding: 80px 0;
+  background-image: url("/public/media/images/success.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  text-align: center;
+}
+section.header h1 {
+  width: 100%;
+  margin: auto;
+  padding: 0 32px;
+  font-size: 64px;
+}
+section.footer {
+  min-height: auto;
+}
+
+header {
+  background-color: rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+header h1 {
+  width: 100%;
+  font-size: 64px;
+  margin: auto;
+  color: white;
+}
+header p {
+  color: white;
+}
+
+footer {
+  text-align: center;
+}
+
+.title {
+  font-size: 32px;
+  text-align: center;
+}
+
+.separator {
+  width: 100%;
+  max-width: 50%;
+  margin: 16px auto;
+  border-bottom: 2px solid #b6ad7e;
+}
+
+.image-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.image-cta .img {
+  display: inline-block;
+  max-width: 33.3333333%;
+  padding: 0 16px;
+}
+.image-cta .img a {
+  text-decoration: none;
+}
+.image-cta .img img {
+  width: 100%;
+  margin-top: 16px;
+}
+.image-cta .img div {
+  margin-top: 16px;
+  text-align: center;
+  color: #5e583d;
+}
+.image-cta .img .project-name * {
+  display: inline-block;
+}
+
+@media screen and (max-width: 650px) {
+  section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+@media screen and (max-width: 550px) {
+  section.header h1 {
+    font-size: 32px;
+  }
+
+  p {
+    font-size: 16px;
+  }
+
+  .image-cta .img {
+    width: 100%;
+    margin: 16px 0;
+  }
+}
+
+/*# sourceMappingURL=example-theme-style.css.map */
