@@ -9,11 +9,15 @@
 
 ### Install MongoDB
 
+Follow these steps to get MongoDB installed, set up database server authentication, and set up your CMS database connection credentials.
+
 1. Download and install [MongoDB](https://www.mongodb.com/download-center/community)
 1. Start MongoDB: `mongod`
 1. Connect to MongoDB server: `mongo`
 1. Switch to admin database: `use admin`
-1. Create admin user (has access to every database on the server)
+1. Here's where you'll create the credentials used to connect to the database server when authentication is enabled.
+
+   Create admin user (has access to every database on the server)
 
     ``` mongodb
       db.createUser(
@@ -25,7 +29,9 @@
       )
     ```
 
-1. Switch to `<your database name>`: `use <your database name>`
+1. Here's where you'll create the credentials used to connect to your CMS database.
+
+   Switch to `<your database name>`: `use <your database name>`
 1. Create database user (for the database you want to use for the CMS)
 
     ``` mongodb
@@ -42,8 +48,6 @@
 
 In order to connect to the database with authentication enabled use this command and use your admin logins: `mongo -u "<username>" -p "<password>" --authenticationDatabase "admin"`
 
-**NOTE**: Be sure to change the credentials in `index.js`.
-
 ### Install NodeJS
 
 1. Download and install [NodeJS](https://nodejs.org/)
@@ -57,8 +61,6 @@ In order to connect to the database with authentication enabled use this command
 
 1. Do it: `npm start`
 
-**NOTE**: Currently, starting the server will create an admin user **(username is `admin`, password is `password`)** to access the dashboard. In the future there will be a proper way of setting up an admin user.
-
 ## The Dashboard
 
-/pc_admin
+Visit the [dashboard](http://localhost:8080/pc_admin) to set up your database connection info and create your first admin user.
