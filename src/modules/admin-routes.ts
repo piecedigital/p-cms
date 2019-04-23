@@ -7,7 +7,7 @@ import { getView } from "./render";
 import { authorize, authenticate, deauthenticate } from "./auth";
 import Database from "./database";
 import Store from "./store";
-import { aggregateAllPluginData, urlPrefixer, updateSRVConfig } from "./helpers";
+import { aggregateAllPluginData, urlPrefixer, updateSRVConfig, getThemes } from "./helpers";
 import { isNull } from "util";
 
 const app = express();
@@ -144,7 +144,9 @@ app.get(/^\/plugin\/(.+)?$/i, (req, res) => {
                 getView(up(req.url), {
                     title: "Admin Dashboard",
                     data: Object.assign(data, {
-                        adminViews: store.getPlugins()
+                        adminViews: store.getPlugins(),
+                        themes: getThemes(),
+                        currentTheme: process.env["THEME"]
                     })
                 })
                 .then(result => {

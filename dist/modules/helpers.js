@@ -136,9 +136,9 @@ function getPlugins(callback) {
     fs_1.readdirSync(path_1.join(__dirname, "../plugins"))
         .map(function (folder) {
         var pr = JSON.parse(fs_1.readFileSync(path_1.join(__dirname, "../plugins", folder, "info.json")).toString());
-        var component = fs_1.readFileSync(path_1.join(__dirname, "../plugins", folder, "index.handlebars")).toString();
+        // const component = readFileSync(join(__dirname, `../plugins`, folder, "index.handlebars")).toString();
         // const component = readFileSync(join(__dirname, `../plugins`, folder, "index.js")).toString();
-        return { pr: pr, component: component, directory: folder };
+        return { pr: pr, directory: folder };
     })
         .map(function (data) {
         callback(data);

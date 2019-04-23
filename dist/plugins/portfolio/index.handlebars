@@ -1,0 +1,46 @@
+<div class="page-wrap portfolio">
+    <form action="/api/remove-project" method="POST">
+        <h2>List of Projects</h2>
+        <div class="projects">
+            {{#each portfolios as |project|}}
+                <input id="{{project.projectPK}}-{{input}}" type="checkbox" name="projectPK"
+                    value={{project.projectPK}} />
+                <div class="project">
+                    <label htmlFor="{{project.projectPK}}-{{input}}">
+                        <div class="image">
+                            <img src="{{project.imageURL}}" alt="{{project.description}}" />
+                        </div>
+                        <div class="info">
+                            <div class="project-name">
+                                <span>{{project.name}}</span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            {{/each}}
+        </div>
+        <button>Remove Selected</button>
+    </form>
+    <hr class="separator">
+    </hr>
+    <form class="add-project-form" action="/api/add-project" method="POST">
+        <h2>Add New Project</h2>
+        <div>
+            <label htmlFor="">Project Name</label><br />
+            <input type="text" name="name" />
+        </div>
+        <div>
+            <label htmlFor="">Project Description</label><br />
+            <textarea name="description" id="" cols={30} rows={10}></textarea>
+        </div>
+        <div>
+            <label htmlFor="">Project URL</label><br />
+            <input type="text" name="project-url" />
+        </div>
+        <div>
+            <label htmlFor="">Project Image</label><br />
+            <input type="text" name="image-url" value="/public/media/images/cat-dog.jpg" disabled />
+        </div>
+        <button>Submit</button>
+    </form>
+</div>

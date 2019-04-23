@@ -123,7 +123,9 @@ app.get(/^\/plugin\/(.+)?$/i, function (req, res) {
             render_1.getView(up(req.url), {
                 title: "Admin Dashboard",
                 data: Object.assign(data, {
-                    adminViews: store.getPlugins()
+                    adminViews: store.getPlugins(),
+                    themes: helpers_1.getThemes(),
+                    currentTheme: process.env["THEME"]
                 })
             })
                 .then(function (result) {

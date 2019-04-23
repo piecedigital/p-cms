@@ -9,7 +9,7 @@
         "page": "setup.handlebars"
     },
     "/pc_admin/plugin/{:plug}": {
-        "page": "../../plugins/{:plug}/index.js"
+        "page": "../../plugins/{:plug}/index.handlebars"
     },
     "/pc_admin/$": {
         "params": {

@@ -49,7 +49,7 @@ export interface loadedThemeData {
 
 export interface loadedPluginData {
     pr: PluginRegister,
-    component: any,
+    // component: any,
     directory: string
 }
 
@@ -195,9 +195,9 @@ export function getPlugins(callback: (data: any) => void) {
     readdirSync(join(__dirname, `../plugins`))
     .map((folder: string) => {
         const pr: PluginRegister = JSON.parse(readFileSync(join(__dirname, `../plugins`, folder, "info.json")).toString());
-        const component = readFileSync(join(__dirname, `../plugins`, folder, "index.handlebars")).toString();
+        // const component = readFileSync(join(__dirname, `../plugins`, folder, "index.handlebars")).toString();
         // const component = readFileSync(join(__dirname, `../plugins`, folder, "index.js")).toString();
-        return { pr, component, directory: folder };
+        return { pr, directory: folder };
     })
     .map((data: loadedPluginData) => {
         callback(data);

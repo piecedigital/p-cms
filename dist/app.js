@@ -22,9 +22,9 @@ var dbs = new database_1.default();
 var store = new store_1.default();
 function getPluginsAndRegister() {
     helpers_1.getPlugins(function (data) {
-        var pr = data.pr, component = data.component, directory = data.directory;
+        var pr = data.pr, /* component,*/ directory = data.directory;
         try {
-            store.addPlugin(register_admin_view_1.registerAdminView(pr, directory, component.default));
+            store.addPlugin(register_admin_view_1.registerAdminView(pr, directory /*, component.default*/));
         }
         catch (error) {
             console.error("Could not load plugin", pr.name, error);

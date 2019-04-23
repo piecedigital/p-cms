@@ -1,18 +1,12 @@
-import * as React from "react";
-import { renderToString } from "react-dom/server";
-import { StaticRouter as Router, Route } from "react-router";
 import * as handlebars from "handlebars";
 import * as filter from "handlebars.filter";
-
 import { HandlebarsHandler } from "../content-handler";
 import Database from "./database";
-import { queryManyCollections, regexURL, swapParamMarkers } from "./helpers";
+import { queryManyCollections } from "./helpers";
 
-// filter.registerFilter("foobar", function (data, other) {
-//     const res = (data);
-//     console.log(data, res, other);
-//     return res;
-// });
+filter.registerFilter("currentTheme", function (data, other, another) {
+    return data === process.env["THEME"];
+});
 filter.registerHelper(handlebars);
 
 const context = {};

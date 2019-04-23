@@ -20,7 +20,7 @@ export class Plugin {
     directory: string;
     component: any;
 
-    constructor(pr: PluginRegister, directory: string, component: any, props: any = {}) {
+    constructor(pr: PluginRegister, directory: string, /*component: any, */props: any = {}) {
         if(pr.name == null) return null;
 
         this.name = pr.name;
@@ -32,7 +32,7 @@ export class Plugin {
         this.props = pr.props || {};
 
         this.directory = directory;
-        this.component = component;
+        // this.component = component;
     }
 
     slug() {

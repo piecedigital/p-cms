@@ -4,11 +4,9 @@ var handlebars = require("handlebars");
 var filter = require("handlebars.filter");
 var content_handler_1 = require("../content-handler");
 var helpers_1 = require("./helpers");
-// filter.registerFilter("foobar", function (data, other) {
-//     const res = (data);
-//     console.log(data, res, other);
-//     return res;
-// });
+filter.registerFilter("currentTheme", function (data, other, another) {
+    return data === process.env["THEME"];
+});
 filter.registerHelper(handlebars);
 var context = {};
 function getView(url, options) {

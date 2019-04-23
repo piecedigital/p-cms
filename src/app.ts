@@ -23,11 +23,11 @@ const store = new Store();
 function getPluginsAndRegister() {
     getPlugins((data) => {
         const {
-            pr, component, directory
+            pr,/* component,*/ directory
         } = data;
 
         try {
-            store.addPlugin(registerAdminView(pr, directory, component.default));
+            store.addPlugin(registerAdminView(pr, directory/*, component.default*/));
         } catch (error) {
             console.error("Could not load plugin", pr.name, error);
         }
