@@ -7,6 +7,7 @@ var bcrypt = require("bcryptjs");
 var render_1 = require("./render");
 var auth_1 = require("./auth");
 var helpers_1 = require("./helpers");
+var util_1 = require("util");
 var app = express();
 var dbs = null;
 var store = null;
@@ -36,16 +37,21 @@ app.get("/", csrfProtection, function (req, res) {
     }, function () { return res.redirect("/pc_admin/login"); });
 });
 app.get("/db-setup", csrfProtection, function (req, res) {
-    render_1.getView(up(req.url), {
-        title: "Setup Database",
-        data: {
-            csrfToken: req.csrfToken()
-        }
-    })
-        .then(function (result) {
-        res.send(result);
-    })
-        .catch(function (e) { return console.error(e); });
+    if (dbs.Connected) {
+        res.redirect("/pc_admin");
+    }
+    else {
+        render_1.getView(up(req.url), {
+            title: "Setup Database",
+            data: {
+                csrfToken: req.csrfToken()
+            }
+        })
+            .then(function (result) {
+            res.send(result);
+        })
+            .catch(function (e) { return console.error(e); });
+    }
 });
 app.post("/db-setup", csrfProtection, function (req, res) {
     var _a = req.body, username = _a.username, password = _a.password, dbName = _a.dbName, dbHost = _a.dbHost;
@@ -75,16 +81,23 @@ app.get("/login", csrfProtection, function (req, res) {
     auth_1.authorize(req, dbs, function () {
         res.redirect("/pc_admin");
     }, function () {
-        render_1.getView(up(req.url), {
-            title: "Admin Login",
-            data: {
-                csrfToken: req.csrfToken()
+        dbs.AdminUserModel.findOne({}, function (err, doc) {
+            if (!util_1.isNull(doc)) {
+                render_1.getView(up(req.url), {
+                    title: "Admin Login",
+                    data: {
+                        csrfToken: req.csrfToken()
+                    }
+                })
+                    .then(function (result) {
+                    res.send(result);
+                })
+                    .catch(function (e) { return console.error(e); });
             }
-        })
-            .then(function (result) {
-            res.send(result);
-        })
-            .catch(function (e) { return console.error(e); });
+            else {
+                res.redirect("signup");
+            }
+        });
     });
 });
 app.get("/signup", csrfProtection, function (req, res) {
@@ -131,20 +144,22 @@ app.post("/login", csrfProtection, function (req, res) {
 });
 app.post("/signup", csrfProtection, function (req, res) {
     if (req.body.password === req.body.password) {
-        if (!res) {
-            var newAdminUser = new dbs.AdminUserModel({
-                _id: new mongoose_1.Types.ObjectId(),
-                displayName: req.body.displayName,
-                name: req.body.username.toLowerCase(),
-                password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync())
-            });
-            newAdminUser.save(function (err) {
-                if (err)
-                    return console.error(err);
+        var newAdminUser = new dbs.AdminUserModel({
+            _id: new mongoose_1.Types.ObjectId(),
+            displayName: req.body.displayName,
+            name: req.body.username.toLowerCase(),
+            password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync())
+        });
+        newAdminUser.save(function (err) {
+            if (err) {
+                console.error(err);
+                res.redirect("/pc_admin/signup");
+            }
+            else {
                 console.log("created admin user");
                 res.redirect("/pc_admin/login");
-            });
-        }
+            }
+        });
     }
     else {
         res.redirect("/pc_admin/signup");

@@ -17,33 +17,15 @@ const views: Record<string, any> = {
 }
 
 export class ReactHandler extends React.Component {
-    state: {
-        theme: any
-    };
+    state: {};
     props: any;
 
     constructor(props) {
         super(props);
         // console.log("yerrrr", props.match, props.location);
 
-        let theme = null;
 
-        try {
-            theme = require(`../themes/${process.env["THEME"]}/index`).default()
-        } catch (error) {
-            // console.error(error);
-            try {
-                theme = require(`../themes/example/index`).default()
-            } catch (error) {
-                // console.error(error);
-            }
-        }
-
-        if(!theme) console.error("There was a problem loading a theme. Even the backup failed...");
-
-        this.state = {
-            theme
-        };
+        this.state = {};
     }
 
     render() {
@@ -58,10 +40,6 @@ export class ReactHandler extends React.Component {
                     <Route path="/pc_admin" component={(props) => {
                         return <AdminDashboard {...props} {...this.props} />;
                     }} />
-                    <Route path="/" component={(props) => {
-                        return <this.state.theme {...props} {...this.props} />;
-                    }} />
-                    {/* <Route component={$404} /> */}
                 </Switch>
             )
         ]);

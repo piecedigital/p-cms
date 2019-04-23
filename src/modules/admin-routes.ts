@@ -8,6 +8,7 @@ import { authorize, authenticate, deauthenticate } from "./auth";
 import Database from "./database";
 import Store from "./store";
 import { aggregateAllPluginData, urlPrefixer, updateSRVConfig } from "./helpers";
+import { isNull } from "util";
 
 const app = express();
 let dbs: Database = null;
@@ -45,16 +46,20 @@ app.get("/", csrfProtection, (req, res) => {
 });
 
 app.get("/db-setup", csrfProtection, (req, res) => {
-    getView(up(req.url), {
-        title: "Setup Database",
-        data: {
-            csrfToken: req.csrfToken()
-        }
-    })
-    .then(result => {
-        res.send(result);
-    })
-    .catch(e => console.error(e));
+    if (dbs.Connected) {
+        res.redirect("/pc_admin");
+    } else {
+        getView(up(req.url), {
+            title: "Setup Database",
+            data: {
+                csrfToken: req.csrfToken()
+            }
+        })
+        .then(result => {
+            res.send(result);
+        })
+        .catch(e => console.error(e));
+    }
 });
 
 app.post("/db-setup", csrfProtection, (req, res) => {
@@ -94,16 +99,22 @@ app.get("/login", csrfProtection, (req, res) => {
     authorize(req, dbs, () => {
         res.redirect("/pc_admin");
     }, () => {
-        getView(up(req.url), {
-            title: "Admin Login",
-            data: {
-                csrfToken: req.csrfToken()
+        dbs.AdminUserModel.findOne({}, (err, doc) => {
+            if (!isNull(doc)) {
+                getView(up(req.url), {
+                    title: "Admin Login",
+                    data: {
+                        csrfToken: req.csrfToken()
+                    }
+                })
+                .then(result => {
+                    res.send(result);
+                })
+                .catch(e => console.error(e));
+            } else {
+                res.redirect("signup");
             }
-        })
-        .then(result => {
-            res.send(result);
-        })
-        .catch(e => console.error(e));
+        });
     });
 });
 
@@ -158,20 +169,22 @@ app.post("/login", csrfProtection, (req, res) => {
 
 app.post("/signup", csrfProtection, (req, res) => {
     if(req.body.password === req.body.password) {
-        if (!res) {
-            const newAdminUser = new dbs.AdminUserModel({
-                _id: new Types.ObjectId(),
-                displayName: req.body.displayName,
-                name: req.body.username.toLowerCase(),
-                password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync())
-            } as User);
+        const newAdminUser = new dbs.AdminUserModel({
+            _id: new Types.ObjectId(),
+            displayName: req.body.displayName,
+            name: req.body.username.toLowerCase(),
+            password: bcrypt.hashSync(req.body.password, bcrypt.genSaltSync())
+        } as User);
 
-            newAdminUser.save((err) => {
-                if (err) return console.error(err);
+        newAdminUser.save((err) => {
+            if (err) {
+                console.error(err);
+                res.redirect("/pc_admin/signup");
+            } else {
                 console.log("created admin user");
                 res.redirect("/pc_admin/login");
-            });
-        }
+            }
+        });
     } else {
         res.redirect("/pc_admin/signup");
     }

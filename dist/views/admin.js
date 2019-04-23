@@ -117,7 +117,11 @@ var AdminLogin = /** @class */ (function (_super) {
                             React.createElement("br", null),
                             React.createElement("input", { type: "password", name: "password" })),
                         React.createElement("div", null,
-                            React.createElement("button", { type: "submit" }, "Login")))))
+                            React.createElement("button", { type: "submit" }, "Login"))),
+                    React.createElement("footer", null,
+                        "Need an account? ",
+                        React.createElement("a", { href: "/pc_admin/signup" }, "Signup here"),
+                        ".")))
         ]);
     };
     return AdminLogin;
@@ -149,11 +153,15 @@ var AdminSignup = /** @class */ (function (_super) {
                             React.createElement("br", null),
                             React.createElement("input", { type: "password", name: "password" })),
                         React.createElement("div", null,
-                            React.createElement("label", { htmlFor: "" }, "Password:"),
+                            React.createElement("label", { htmlFor: "" }, "Confirm Password:"),
                             React.createElement("br", null),
                             React.createElement("input", { type: "password", name: "passwordConfirm" })),
                         React.createElement("div", null,
-                            React.createElement("button", { type: "submit" }, "Signup")))))
+                            React.createElement("button", { type: "submit" }, "Signup"))),
+                    React.createElement("footer", null,
+                        "Need an account? ",
+                        React.createElement("a", { href: "/pc_admin/signup" }, "Signup here"),
+                        ".")))
         ]);
     };
     return AdminSignup;

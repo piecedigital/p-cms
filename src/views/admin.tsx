@@ -130,6 +130,9 @@ export class AdminLogin extends React.Component {
                             <button type="submit">Login</button>
                         </div>
                     </form>
+                    <footer>
+                        Need an account? <a href="/pc_admin/signup">Signup here</a>.
+                    </footer>
                 </div>
             </section>
         ]);
@@ -171,13 +174,16 @@ export class AdminSignup extends React.Component {
                             <input type="password" name="password" />
                         </div>
                         <div>
-                            <label htmlFor="">Password:</label><br />
+                            <label htmlFor="">Confirm Password:</label><br />
                             <input type="password" name="passwordConfirm" />
                         </div>
                         <div>
                             <button type="submit">Signup</button>
                         </div>
                     </form>
+                    <footer>
+                        Need an account? <a href="/pc_admin/signup">Signup here</a>.
+                    </footer>
                 </div>
             </section>
         ]);
